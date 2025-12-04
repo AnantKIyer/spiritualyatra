@@ -12,8 +12,26 @@ export interface Destination {
   image: string;
   location: string;
   highlights: string[];
+  labels?: LocationLabel[];
+  basePrice?: number;
   duration?: string;
   tripPlan: TripPlanDay[];
+}
+
+export type LocationLabel =
+  | 'spiritual'
+  | 'romantic'
+  | 'historic'
+  | 'excursion'
+  | 'adventure';
+
+export interface Location {
+  id: string;
+  name: string;
+  image: string;
+  labels: LocationLabel[];
+  highlights: string[];
+  basePrice: number;
 }
 
 export interface Package {

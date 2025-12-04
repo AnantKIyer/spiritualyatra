@@ -8,6 +8,8 @@ export const destinations: Destination[] = [
     image: '/images/varanasi_dest.webp',
     location: 'Uttar Pradesh, India',
     highlights: ['Ganga Aarti', 'Ancient Temples', 'Spiritual Ghats', 'Yoga & Meditation'],
+    labels: ['spiritual', 'historic'],
+    basePrice: 12000,
     duration: '3-5 days',
     tripPlan: [
       {
@@ -52,6 +54,8 @@ export const destinations: Destination[] = [
     image: '/images/rishikesh_dest.jpeg',
     location: 'Uttarakhand, India',
     highlights: ['Yoga Retreats', 'Ganga River', 'Adventure Sports', 'Ashrams'],
+    labels: ['spiritual', 'adventure', 'excursion'],
+    basePrice: 10000,
     duration: '4-7 days',
     tripPlan: [
       {
@@ -96,6 +100,8 @@ export const destinations: Destination[] = [
     image: '/images/haridwar_dest.jpg',
     location: 'Uttarakhand, India',
     highlights: ['Har Ki Pauri', 'Kumbh Mela', 'Temples', 'Ganga Aarti'],
+    labels: ['spiritual', 'excursion'],
+    basePrice: 8000,
     duration: '2-3 days',
     tripPlan: [
       {
@@ -140,6 +146,8 @@ export const destinations: Destination[] = [
     image: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=900&q=80',
     location: 'Bihar, India',
     highlights: ['Mahabodhi Temple', 'Buddha Statue', 'Meditation Centers', 'Peace Pagoda'],
+    labels: ['spiritual', 'historic'],
+    basePrice: 9000,
     duration: '2-4 days',
     tripPlan: [
       {
@@ -184,6 +192,8 @@ export const destinations: Destination[] = [
     image: 'https://images.unsplash.com/photo-1582979512210-de1c28e4c4ff?auto=format&fit=crop&w=900&q=80',
     location: 'Punjab, India',
     highlights: ['Golden Temple', 'Langar', 'Jallianwala Bagh', 'Wagah Border'],
+    labels: ['spiritual', 'historic', 'excursion'],
+    basePrice: 11000,
     duration: '2-3 days',
     tripPlan: [
       {
@@ -228,6 +238,8 @@ export const destinations: Destination[] = [
     image: 'https://images.unsplash.com/photo-1548013146-c23c86e2c5d4?auto=format&fit=crop&w=900&q=80',
     location: 'Andhra Pradesh, India',
     highlights: ['Venkateswara Temple', 'Tirumala Hills', 'Pilgrimage', 'Spiritual Heritage'],
+    labels: ['spiritual'],
+    basePrice: 9500,
     duration: '2-3 days',
     tripPlan: [
       {

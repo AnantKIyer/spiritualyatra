@@ -1,97 +1,108 @@
 import { Package } from '@/types';
+import { locations } from '@/lib/data/locations';
 
-export const packages: Package[] = [
+type YatraId =
+  | 'spiritual-yatra'
+  | 'romance-yatra'
+  | 'historic-importance-yatra'
+  | 'geographical-significance-yatra'
+  | 'excursion-yatra'
+  | 'adventure-yatra';
+
+interface YatraDefinition {
+  id: YatraId;
+  name: string;
+  label: 'spiritual' | 'romantic' | 'historic' | 'excursion' | 'adventure';
+  description: string;
+}
+
+const yatraDefinitions: YatraDefinition[] = [
   {
-    id: 'spiritual-north',
-    name: 'Spiritual North India',
-    description: 'A comprehensive journey through the spiritual heartland of North India, visiting sacred cities and experiencing ancient traditions.',
-    image: 'https://img.staticmb.com/mbcontent/images/crop/uploads/2024/4/places-to-visit-in-varanasi_0_1200.jpg.webp',
-    destinations: ['Varanasi', 'Rishikesh', 'Haridwar'],
-    duration: '10 days / 9 nights',
-    price: 45000,
-    highlights: [
-      'Ganga Aarti in Varanasi',
-      'Yoga sessions in Rishikesh',
-      'Temple visits',
-      'Meditation retreat',
-      'Cultural experiences',
-    ],
-    itinerary: [
-      'Day 1: Arrival in Delhi',
-      'Day 2-3: Varanasi - Ghats and Temples',
-      'Day 4-5: Rishikesh - Yoga & Adventure',
-      'Day 6-7: Haridwar - Spiritual Practices',
-      'Day 8-9: Return journey with stops',
-      'Day 10: Departure',
-    ],
+    id: 'spiritual-yatra',
+    name: 'Spiritual Yatra',
+    label: 'spiritual',
+    description:
+      'An immersive spiritual journey across India’s most sacred riverside towns and pilgrimage hubs.',
   },
   {
-    id: 'buddhist-pilgrimage',
-    name: 'Buddhist Pilgrimage Tour',
-    description: 'Follow in the footsteps of Buddha, visiting sacred sites where he lived, taught, and attained enlightenment.',
-    image: 'https://images.unsplash.com/photo-1509099836639-18ba1795216d?auto=format&fit=crop&w=900&q=80',
-    destinations: ['Bodhgaya', 'Varanasi', 'Sarnath'],
-    duration: '8 days / 7 nights',
-    price: 38000,
-    highlights: [
-      'Mahabodhi Temple',
-      'Buddha\'s Enlightenment Site',
-      'Ancient Stupas',
-      'Meditation sessions',
-      'Buddhist monasteries',
-    ],
-    itinerary: [
-      'Day 1: Arrival in Patna',
-      'Day 2-4: Bodhgaya - Enlightenment Site',
-      'Day 5-6: Varanasi & Sarnath',
-      'Day 7: Return journey',
-      'Day 8: Departure',
-    ],
+    id: 'romance-yatra',
+    name: 'Romance Yatra',
+    label: 'romantic',
+    description:
+      'A dreamy escape through palaces, lakes, and the timeless symbol of love.',
   },
   {
-    id: 'yoga-wellness',
-    name: 'Yoga & Wellness Retreat',
-    description: 'A rejuvenating retreat combining yoga, meditation, and wellness practices in the serene Himalayas.',
-    image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&h=600&fit=crop&q=80',
-    destinations: ['Rishikesh', 'Haridwar'],
-    duration: '7 days / 6 nights',
-    price: 32000,
-    highlights: [
-      'Daily yoga sessions',
-      'Meditation classes',
-      'Ayurvedic treatments',
-      'Nature walks',
-      'Healthy meals',
-    ],
-    itinerary: [
-      'Day 1: Arrival in Rishikesh',
-      'Day 2-6: Daily yoga, meditation, and wellness',
-      'Day 7: Departure',
-    ],
+    id: 'historic-importance-yatra',
+    name: 'Historic Importance Yatra',
+    label: 'historic',
+    description:
+      'Walk through the chapters of Indian history with forts, palaces, and heritage cities.',
   },
   {
-    id: 'golden-temple',
-    name: 'Golden Temple & Punjab Heritage',
-    description: 'Experience the rich Sikh heritage and visit the magnificent Golden Temple in Amritsar.',
-    image: 'https://images.unsplash.com/photo-1508449029101-45b2cf43dba0?auto=format&fit=crop&w=900&q=80',
-    destinations: ['Amritsar', 'Chandigarh'],
-    duration: '5 days / 4 nights',
-    price: 25000,
-    highlights: [
-      'Golden Temple visit',
-      'Langar experience',
-      'Wagah Border ceremony',
-      'Punjabi culture',
-      'Heritage sites',
-    ],
-    itinerary: [
-      'Day 1: Arrival in Amritsar',
-      'Day 2-3: Golden Temple & city tour',
-      'Day 4: Wagah Border & Chandigarh',
-      'Day 5: Departure',
-    ],
+    id: 'geographical-significance-yatra',
+    name: 'Geographical Significance Yatra',
+    label: 'adventure',
+    description:
+      'Discover India’s diverse geography from rivers and hills to deserts and salt flats.',
+  },
+  {
+    id: 'excursion-yatra',
+    name: 'Excursion Yatra',
+    label: 'excursion',
+    description:
+      'Perfect for short getaways, this journey blends nature, light adventure, and culture.',
+  },
+  {
+    id: 'adventure-yatra',
+    name: 'Adventure Yatra',
+    label: 'adventure',
+    description:
+      'For thrill seekers, combining the best of Himalayan adventures with scenic hill stations.',
   },
 ];
+
+function buildPackage(def: YatraDefinition): Package | null {
+  const matchedLocations = locations.filter(location =>
+    location.labels.includes(def.label)
+  );
+
+  if (matchedLocations.length === 0) return null;
+
+  const totalBasePrice = matchedLocations.reduce(
+    (sum, loc) => sum + loc.basePrice,
+    0
+  );
+
+  const highlights = Array.from(
+    new Set(matchedLocations.flatMap(loc => loc.highlights))
+  ).slice(0, 8);
+
+  const itinerary =
+    matchedLocations.length > 0
+      ? matchedLocations.map((loc, index) => {
+        const dayRangeStart = index * 2 + 1;
+        const dayRangeEnd = index * 2 + 2;
+        return `Day ${dayRangeStart}-${dayRangeEnd}: ${loc.name} - Key experiences and local exploration`;
+      })
+      : undefined;
+
+  return {
+    id: def.id,
+    name: def.name,
+    description: def.description,
+    image: matchedLocations[0].image,
+    destinations: matchedLocations.map(loc => loc.name),
+    duration: `${matchedLocations.length * 2 + 1} days / ${matchedLocations.length * 2
+      } nights`,
+    price: totalBasePrice,
+    highlights,
+    itinerary,
+  };
+}
+
+export const packages: Package[] = yatraDefinitions
+  .map(buildPackage)
+  .filter((pkg): pkg is Package => pkg !== null);
 
 export function getPackageById(id: string): Package | undefined {
   return packages.find(pkg => pkg.id === id);
