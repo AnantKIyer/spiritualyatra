@@ -277,6 +277,52 @@ export const destinations: Destination[] = [
       },
     ],
   },
+  {
+    id: 'udaipur',
+    name: 'Udaipur',
+    description: 'The City of Lakes, a romantic destination with stunning palaces, serene lakes, and royal heritage.',
+    image: '/images/udaipur_dest.jpg',
+    location: 'Rajasthan, India',
+    highlights: ['City Palace and Lake Pichola', 'Sunset boat ride', 'Rooftop candle-light dining'],
+    labels: ['romantic', 'historic'],
+    basePrice: 14000,
+    duration: '3-4 days',
+    tripPlan: [
+      {
+        day: 'Day 1',
+        title: 'Palace & Lake Arrival',
+        description:
+          'Arrive in the City of Lakes, check into a heritage hotel, and begin with a visit to the magnificent City Palace overlooking Lake Pichola.',
+        activities: [
+          'City Palace guided tour with royal history',
+          'Jagdish Temple visit',
+          'Evening boat ride on Lake Pichola',
+        ],
+      },
+      {
+        day: 'Day 2',
+        title: 'Heritage & Culture',
+        description:
+          'Explore the intricate architecture of Saheliyon-ki-Bari, visit the vintage car museum, and enjoy traditional Rajasthani cuisine.',
+        activities: [
+          'Saheliyon-ki-Bari gardens tour',
+          'Vintage car museum visit',
+          'Traditional Rajasthani thali dinner',
+        ],
+      },
+      {
+        day: 'Day 3',
+        title: 'Romantic Experiences',
+        description:
+          'Experience the magic of Udaipur with a sunset boat ride, followed by a romantic rooftop dinner with views of the illuminated palaces.',
+        activities: [
+          'Sunset boat ride on Lake Pichola',
+          'Rooftop candle-light dining experience',
+          'Cultural folk dance performance',
+        ],
+      },
+    ],
+  },
 ];
 
 export function getDestinationById(id: string): Destination | undefined {

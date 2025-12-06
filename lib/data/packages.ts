@@ -107,4 +107,3 @@ export const packages: Package[] = yatraDefinitions
 export function getPackageById(id: string): Package | undefined {
   return packages.find(pkg => pkg.id === id);
 }
-

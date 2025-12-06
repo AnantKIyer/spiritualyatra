@@ -5,7 +5,7 @@ export const locations: Location[] = [
         id: 'varanasi',
         name: 'Varanasi',
         image:
-            'https://img.staticmb.com/mbcontent/images/crop/uploads/2024/4/places-to-visit-in-varanasi_0_1200.jpg.webp',
+            '/images/varanasi_dest.webp',
         labels: ['spiritual', 'historic'],
         highlights: [
             'Ganga Aarti at Dashashwamedh Ghat',
@@ -18,7 +18,7 @@ export const locations: Location[] = [
         id: 'rishikesh',
         name: 'Rishikesh',
         image:
-            'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&h=600&fit=crop&q=80',
+            '/images/rishikesh_dest.jpeg',
         labels: ['spiritual', 'adventure', 'excursion'],
         highlights: [
             'Yoga and meditation by the Ganga',
@@ -31,7 +31,7 @@ export const locations: Location[] = [
         id: 'haridwar',
         name: 'Haridwar',
         image:
-            'https://images.unsplash.com/photo-1563897539633-7374c276c212?auto=format&fit=crop&w=900&q=80',
+            '/images/haridwar_dest.jpg',
         labels: ['spiritual', 'excursion'],
         highlights: [
             'Har Ki Pauri Ganga Aarti',
@@ -44,7 +44,7 @@ export const locations: Location[] = [
         id: 'prayagraj',
         name: 'Prayagraj',
         image:
-            'https://images.unsplash.com/photo-1607863720035-4b8306a3e1af?auto=format&fit=crop&w=900&q=80',
+            '/images/prayagraj_dest.jpg',
         labels: ['spiritual', 'historic'],
         highlights: [
             'Triveni Sangam holy confluence',
@@ -57,7 +57,7 @@ export const locations: Location[] = [
         id: 'udaipur',
         name: 'Udaipur',
         image:
-            'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=900&q=80',
+            '/images/udaipur_dest.jpg',
         labels: ['romantic', 'historic'],
         highlights: [
             'City Palace and Lake Pichola',
@@ -70,7 +70,7 @@ export const locations: Location[] = [
         id: 'jaipur',
         name: 'Jaipur',
         image:
-            'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=900&q=80',
+            '/images/jaipur_dest.jpg',
         labels: ['romantic', 'historic', 'excursion'],
         highlights: [
             'Amer Fort and Nahargarh views',
@@ -83,7 +83,7 @@ export const locations: Location[] = [
         id: 'agra',
         name: 'Agra',
         image:
-            'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&w=900&q=80',
+            '/images/agra_dest.jpg',
         labels: ['romantic', 'historic'],
         highlights: [
             'Taj Mahal sunrise view',
@@ -96,7 +96,7 @@ export const locations: Location[] = [
         id: 'fatehpur-sikri',
         name: 'Fatehpur Sikri',
         image:
-            'https://images.unsplash.com/photo-1603264041343-9a5a14b0a0e1?auto=format&fit=crop&w=900&q=80',
+            '/images/fatehpur-sikri_dest.jpg',
         labels: ['historic'],
         highlights: [
             'Mughal architectural complex',
@@ -109,7 +109,7 @@ export const locations: Location[] = [
         id: 'jaisalmer',
         name: 'Jaisalmer',
         image:
-            'https://images.unsplash.com/photo-1514924013411-cbf25faa35bb?auto=format&fit=crop&w=900&q=80',
+            '/images/jaisalmer_dest.webp',
         labels: ['adventure', 'excursion', 'historic'],
         highlights: [
             'Desert safari and camel rides',
@@ -122,7 +122,7 @@ export const locations: Location[] = [
         id: 'rann-of-kutch',
         name: 'Rann of Kutch',
         image:
-            'https://images.unsplash.com/photo-1549887534-3db1bd59dcca?auto=format&fit=crop&w=900&q=80',
+            '/images/rann-of-kutch_dest.jpg',
         labels: ['adventure', 'excursion'],
         highlights: [
             'White salt desert landscapes',
@@ -135,7 +135,7 @@ export const locations: Location[] = [
         id: 'auli',
         name: 'Auli',
         image:
-            'https://images.unsplash.com/photo-1517824806704-9040b037703b?auto=format&fit=crop&w=900&q=80',
+            '/images/auli_dest.jpg',
         labels: ['adventure'],
         highlights: [
             'Ski slopes and snow views (seasonal)',
