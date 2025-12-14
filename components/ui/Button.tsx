@@ -14,21 +14,21 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const baseStyles =
-    "font-semibold rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2";
+    "font-medium rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 uppercase tracking-wide";
 
   const variants = {
     primary:
-      "bg-airbnb-red text-white hover:bg-airbnb-red-hover focus:ring-airbnb-red",
+      "bg-red-500 text-white hover:bg-red-600 focus:ring-red-500 material-elevation-2 hover:material-elevation-3 active:material-elevation-1",
     secondary:
-      "bg-airbnb-black text-white hover:bg-black focus:ring-airbnb-black",
+      "bg-red-400 text-white hover:bg-red-500 focus:ring-red-400 material-elevation-2 hover:material-elevation-3 active:material-elevation-1",
     outline:
-      "border border-airbnb-black text-airbnb-black hover:bg-airbnb-surface focus:ring-airbnb-black bg-white",
+      "border-2 border-red-300 text-red-600 hover:bg-red-50 focus:ring-red-300 bg-white material-elevation-1 hover:material-elevation-2",
   };
 
   const sizes = {
-    sm: "px-4 py-2 text-sm",
-    md: "px-6 py-3 text-base",
-    lg: "px-8 py-4 text-lg",
+    sm: "px-6 py-2.5 text-xs",
+    md: "px-8 py-3 text-sm",
+    lg: "px-10 py-4 text-base",
   };
 
   return (

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2000" height="2000" viewBox="0 0 500 500">
+  <!-- Circle Background -->
+  <circle cx="250" cy="200" r="130" fill="#F3C9A4"/>
+
+  <!-- Mountain shapes -->
+  <path d="M170 270 L240 170 L310 270 Z" fill="#301707"/>
+  <path d="M200 270 L260 165 L320 270 Z" fill="#4B2A17"/>
+
+  <!-- Snow on peak -->
+  <path d="M250 175 L260 160 L275 182 L267 185 L260 175 L254 185 Z" fill="#FDF8F0"/>
+
+  <!-- Path -->
+  <path d="M245 270 Q225 285 232 300 Q240 315 255 330 L275 350 L245 380 L215 350 Q230 330 225 310 Q220 290 235 280 Z" fill="#C06A19"/>
+
+  <!-- Trees -->
+  <g fill="#1F3A1B">
+    <polygon points="200,245 208,230 216,245"/>
+    <rect x="206" y="245" width="4" height="10"/>
+    <polygon points="212,250 220,232 228,250"/>
+    <rect x="218" y="250" width="4" height="10"/>
+  </g>
+
+  <!-- Small moon + sparkle -->
+  <circle cx="310" cy="190" r="10" fill="#F7E8D7"/>
+  <circle cx="314" cy="188" r="10" fill="#F3C9A4"/>
+  <circle cx="300" cy="185" r="3" fill="#F7E8D7"/>
+  <circle cx="317" cy="205" r="3" fill="#F7E8D7"/>
+  <circle cx="290" cy="198" r="3" fill="#F7E8D7"/>
+
+  <!-- Plane + Flight trail -->
+  <path d="M160 165 C210 135 290 145 330 165" stroke="#3B2213" stroke-width="10" stroke-linecap="round" fill="none"/>
+  <path d="M295 165 L330 168 C334 170 334 173 330 175 L305 180 L300 195 L292 193 L295 180 L270 175 L268 168 Z" fill="#3B2213"/>
+</svg>

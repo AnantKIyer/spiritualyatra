@@ -1,33 +1,92 @@
-import { Testimonial } from '@/types';
-import Card from '@/components/ui/Card';
+"use client";
+
+import { Testimonial } from "@/types";
+import { StarIcon, QuoteIcon } from "@/components/ui/Icons";
+import Button from "@/components/ui/Button";
+import { useEffect, useRef } from "react";
 
 interface TestimonialCardProps {
   testimonial: Testimonial;
 }
 
 export default function TestimonialCard({ testimonial }: TestimonialCardProps) {
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Random interactive: subtle tilt on hover
+    const card = cardRef.current;
+    if (!card) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const rotateX = (y - centerY) / 20;
+      const rotateY = (centerX - x) / 20;
+
+      card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    };
+
+    const handleMouseLeave = () => {
+      if (card) {
+        card.style.transform = "perspective(1000px) rotateX(0) rotateY(0)";
+      }
+    };
+
+    card.addEventListener("mousemove", handleMouseMove);
+    card.addEventListener("mouseleave", handleMouseLeave);
+
+    return () => {
+      card.removeEventListener("mousemove", handleMouseMove);
+      card.removeEventListener("mouseleave", handleMouseLeave);
+    };
+  }, []);
+
   return (
-    <Card>
-      <div className="p-6">
-        <div className="flex items-center mb-4">
+    <div
+      ref={cardRef}
+      className="bg-white rounded-lg border border-primary-200 material-elevation-2 hover:material-elevation-3 transition-all duration-200 flex flex-col overflow-hidden"
+      style={{ minHeight: "500px" }}
+    >
+      {/* Image/Icon Section - Uniform height */}
+      <div className="relative h-48 w-full bg-primary-50 flex items-center justify-center">
+        <QuoteIcon className="w-16 h-16 text-primary-300" />
+      </div>
+
+      {/* Content Section - Uniform padding */}
+      <div className="p-6 flex flex-col flex-grow">
+        {/* Rating */}
+        <div className="flex items-center gap-1 mb-4">
           {[...Array(testimonial.rating)].map((_, i) => (
-            <svg
-              key={i}
-              className="w-4 h-4 text-airbnb-red"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-            </svg>
+            <StarIcon key={i} className="w-4 h-4 text-secondary-500" filled />
           ))}
         </div>
-        <p className="text-airbnb-black mb-5 text-base leading-relaxed">"{testimonial.content}"</p>
-        <div>
-          <p className="font-semibold text-airbnb-black mb-1">{testimonial.name}</p>
-          <p className="text-sm text-airbnb-gray">{testimonial.location}</p>
+
+        {/* Divider */}
+        <div className="h-px bg-primary-200 mb-4"></div>
+
+        {/* Content */}
+        <p className="text-airbnb-black mb-6 text-sm leading-relaxed line-clamp-4">
+          "{testimonial.content}"
+        </p>
+
+        {/* Author Info */}
+        <div className="mb-6">
+          <p className="font-medium text-airbnb-black mb-1">
+            {testimonial.name}
+          </p>
+          <p className="text-sm text-primary-600">{testimonial.location}</p>
+        </div>
+
+        {/* Button - Always at bottom */}
+        <div className="mt-auto">
+          <Button variant="outline" size="sm" className="w-full">
+            Read more
+          </Button>
         </div>
       </div>
-    </Card>
+    </div>
   );
 }
-
