@@ -1,11 +1,12 @@
-import { notFound } from 'next/navigation';
-import { destinations, getDestinationById } from '@/lib/data/destinations';
-import DestinationDetails from '@/components/sections/DestinationDetails';
+import { use } from "react";
+import { notFound } from "next/navigation";
+import { destinations, getDestinationById } from "@/lib/data/destinations";
+import DestinationDetails from "@/components/sections/DestinationDetails";
 
 interface PageProps {
-  params: {
+  params: Promise<{
     destination: string;
-  };
+  }>;
 }
 
 export function generateStaticParams() {
@@ -15,7 +16,8 @@ export function generateStaticParams() {
 }
 
 export default function DestinationPage({ params }: PageProps) {
-  const destination = getDestinationById(params.destination);
+  const { destination: destinationId } = use(params);
+  const destination = getDestinationById(destinationId);
 
   if (!destination) {
     notFound();
@@ -23,4 +25,3 @@ export default function DestinationPage({ params }: PageProps) {
 
   return <DestinationDetails destination={destination} />;
 }
-
