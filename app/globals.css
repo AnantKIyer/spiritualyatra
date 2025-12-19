@@ -62,6 +62,36 @@
     transform: translate3d(0, 0, 0);
   }
   to {
-    transform: translate3d(-33.333%, 0, 0);
+    transform: translate3d(-50%, 0, 0);
   }
+}
+
+@keyframes marquee-slow {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes marquee-fast {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+.animate-marquee-slow {
+  animation: marquee-slow 45s linear infinite;
+}
+
+.animate-marquee-fast {
+  animation: marquee-fast 20s linear infinite;
 }
