@@ -1,7 +1,10 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
+
+// Module-level counter to track how many modals are open
+let openModalCount = 0;
 
 interface ModalProps {
   isOpen: boolean;
@@ -16,14 +19,36 @@ export default function Modal({
   title,
   children,
 }: ModalProps) {
+  const isRegisteredRef = useRef(false);
+
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && !isRegisteredRef.current) {
+      // Increment counter when this modal opens (only if not already registered)
+      openModalCount++;
+      isRegisteredRef.current = true;
       document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
+    } else if (!isOpen && isRegisteredRef.current) {
+      // Decrement counter when this modal closes (only if it was registered)
+      openModalCount--;
+      isRegisteredRef.current = false;
+
+      // Only reset overflow if no modals are open
+      if (openModalCount === 0) {
+        document.body.style.overflow = "unset";
+      }
     }
+
     return () => {
-      document.body.style.overflow = "unset";
+      // Cleanup: decrement counter if this modal was registered
+      if (isRegisteredRef.current) {
+        openModalCount--;
+        isRegisteredRef.current = false;
+
+        // Only reset overflow if no modals are open
+        if (openModalCount === 0) {
+          document.body.style.overflow = "unset";
+        }
+      }
     };
   }, [isOpen]);
 
