@@ -4,11 +4,12 @@ interface IconProps {
   className?: string;
 }
 
-interface StarIconProps extends IconProps {
+export interface StarIconProps extends IconProps {
   filled?: boolean;
 }
 
-export function StarIcon({ className, filled = true }: StarIconProps) {
+export function StarIcon(props: StarIconProps) {
+  const { className, filled = true } = props;
   if (filled) {
     return (
       <svg className={className} fill="currentColor" viewBox="0 0 24 24">

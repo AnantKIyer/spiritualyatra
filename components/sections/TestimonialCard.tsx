@@ -60,7 +60,11 @@ export default function TestimonialCard({ testimonial }: TestimonialCardProps) {
         {/* Rating */}
         <div className="flex items-center gap-1 mb-4">
           {[...Array(testimonial.rating)].map((_, i) => (
-            <StarIcon key={i} className="w-4 h-4 text-secondary-500" filled />
+            <StarIcon
+              key={i}
+              className="w-4 h-4 text-secondary-500"
+              filled={true}
+            />
           ))}
         </div>
 
