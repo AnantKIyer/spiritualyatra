@@ -7,6 +7,7 @@ import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { requireSessionToken, requireAdminSession } from "@/lib/admin/auth";
 import { SESSION_COOKIE } from "@/lib/admin/session";
+import { getErrorMessage } from "@/lib/errors";
 
 export type ActionResult = { success: true } | { success: false; error: string };
 
@@ -64,48 +65,28 @@ export type TestimonialFormData = {
   avatar?: string;
 };
 
-export async function loginAction(
-  _prevState: ActionResult | null,
-  formData: FormData,
+export async function establishSessionAction(
+  token: string,
 ): Promise<ActionResult> {
-  const username = formData.get("username")?.toString().trim() ?? "";
-  const password = formData.get("password")?.toString() ?? "";
-
-  if (!username || !password) {
-    return { success: false, error: "Username and password are required" };
+  if (!token.trim()) {
+    return { success: false, error: "Invalid session token" };
   }
 
   try {
-    await fetchMutation(api.adminAuth.ensureDefaultAdmin, {});
-
-    const result = await fetchMutation(api.adminAuth.login, {
-      username,
-      password,
-    });
-
     const cookieStore = await cookies();
-    cookieStore.set(SESSION_COOKIE, result.token, {
+    cookieStore.set(SESSION_COOKIE, token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
       maxAge: 60 * 60 * 8,
     });
-
     return { success: true };
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Invalid username or password";
-
-    if (message.includes("NEXT_PUBLIC_CONVEX_URL")) {
-      return {
-        success: false,
-        error:
-          "Could not reach the database. Check NEXT_PUBLIC_CONVEX_URL on this deployment.",
-      };
-    }
-
-    return { success: false, error: message };
+    return {
+      success: false,
+      error: getErrorMessage(error, "Could not save your session. Try again."),
+    };
   }
 }
 
@@ -144,8 +125,7 @@ export async function changePasswordAction(
   } catch (error) {
     return {
       success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to change password",
+      error: getErrorMessage(error, "Failed to change password"),
     };
   }
 }

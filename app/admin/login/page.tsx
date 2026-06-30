@@ -1,18 +1,10 @@
-import { fetchMutation } from "convex/nextjs";
-import { api } from "@/convex/_generated/api";
 import LoginForm from "./LoginForm";
 
 export const metadata = {
   title: "Admin Login - Spiritual Yatra",
 };
 
-export default async function AdminLoginPage() {
-  try {
-    await fetchMutation(api.adminAuth.ensureDefaultAdmin, {});
-  } catch {
-    // Login form will show a clearer error if Convex is unreachable.
-  }
-
+export default function AdminLoginPage() {
   return (
     <div className="min-h-screen bg-gradient-sacred flex items-center justify-center px-6">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-indian-lg border border-saffron-100 p-8 md:p-10">
