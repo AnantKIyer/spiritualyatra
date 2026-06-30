@@ -46,6 +46,9 @@ async function seed() {
     })),
   });
 
+  const admin = await client.mutation(api.adminAuth.ensureDefaultAdmin, {});
+  console.log("Default admin:", admin);
+
   console.log("Seed complete:", result);
 }
 

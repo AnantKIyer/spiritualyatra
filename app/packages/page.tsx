@@ -1,15 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
-import { fetchQuery } from "convex/nextjs";
-import { api } from "@/convex/_generated/api";
-import PackageCard from "@/components/sections/PackageCard";
+import PackagesGrid from "@/components/sections/PackagesGrid";
 import SectionHeading from "@/components/sections/SectionHeading";
 import Button from "@/components/ui/Button";
 import Reveal from "@/components/ui/motion/Reveal";
-import { toPackages } from "@/lib/convex/map";
-import { sortPackagesBoostedFirst } from "@/lib/packages/sort";
-
-export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Travel Packages - Spiritual Yatra",
@@ -17,13 +11,9 @@ export const metadata = {
     "Browse our curated spiritual travel packages and find your perfect journey",
 };
 
-export default async function PackagesPage() {
-  const packageDocs = await fetchQuery(api.packages.list);
-  const packages = sortPackagesBoostedFirst(toPackages(packageDocs));
-
+export default function PackagesPage() {
   return (
     <div className="min-h-screen relative bg-white">
-      {/* Cinematic header */}
       <section className="relative h-[40vh] md:h-[50vh] overflow-hidden -mt-20">
         <Image
           src="/images/rishikesh_dest.jpeg"
@@ -59,11 +49,7 @@ export default async function PackagesPage() {
           subtitle="Every package includes accommodation, meals, expert guidance, and a detailed day-by-day itinerary."
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-16">
-          {packages.map((pkg) => (
-            <PackageCard key={pkg.id} package={pkg} />
-          ))}
-        </div>
+        <PackagesGrid />
 
         <Reveal>
           <div className="bg-gradient-to-br from-saffron-50 via-white to-marigold-50 rounded-2xl p-10 text-center border border-saffron-200 shadow-indian-lg relative overflow-hidden">

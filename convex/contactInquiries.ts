@@ -1,6 +1,6 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
-import { assertAdminSecret } from "./lib/adminAuth";
+import { assertAdminSession } from "./lib/adminAuth";
 
 export const submit = mutation({
   args: {
@@ -19,16 +19,16 @@ export const submit = mutation({
 });
 
 export const list = query({
-  args: { adminSecret: v.string() },
-  handler: async (ctx, { adminSecret }) => {
-    assertAdminSecret(adminSecret);
+  args: { sessionToken: v.string() },
+  handler: async (ctx, { sessionToken }) => {
+    await assertAdminSession(ctx, sessionToken);
     return await ctx.db.query("contactInquiries").order("desc").collect();
   },
 });
 
 export const updateStatus = mutation({
   args: {
-    adminSecret: v.string(),
+    sessionToken: v.string(),
     id: v.id("contactInquiries"),
     status: v.union(
       v.literal("new"),
@@ -36,8 +36,8 @@ export const updateStatus = mutation({
       v.literal("closed"),
     ),
   },
-  handler: async (ctx, { adminSecret, id, status }) => {
-    assertAdminSecret(adminSecret);
+  handler: async (ctx, { sessionToken, id, status }) => {
+    await assertAdminSession(ctx, sessionToken);
     const existing = await ctx.db.get(id);
     if (!existing) throw new Error("Inquiry not found");
     await ctx.db.patch(id, { status });

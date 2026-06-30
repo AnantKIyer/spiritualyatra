@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as adminAuth from "../adminAuth.js";
 import type * as adminDestinations from "../adminDestinations.js";
 import type * as adminPackages from "../adminPackages.js";
 import type * as adminTestimonials from "../adminTestimonials.js";
@@ -16,6 +17,7 @@ import type * as contactInquiries from "../contactInquiries.js";
 import type * as destinations from "../destinations.js";
 import type * as files from "../files.js";
 import type * as lib_adminAuth from "../lib/adminAuth.js";
+import type * as lib_password from "../lib/password.js";
 import type * as packageEvents from "../packageEvents.js";
 import type * as packages from "../packages.js";
 import type * as seed from "../seed.js";
@@ -29,6 +31,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  adminAuth: typeof adminAuth;
   adminDestinations: typeof adminDestinations;
   adminPackages: typeof adminPackages;
   adminTestimonials: typeof adminTestimonials;
@@ -37,6 +40,7 @@ declare const fullApi: ApiFromModules<{
   destinations: typeof destinations;
   files: typeof files;
   "lib/adminAuth": typeof lib_adminAuth;
+  "lib/password": typeof lib_password;
   packageEvents: typeof packageEvents;
   packages: typeof packages;
   seed: typeof seed;

@@ -112,22 +112,23 @@ npm run seed         # import seed data from lib/data/
 
 Set `NEXT_PUBLIC_CONVEX_URL` in `.env.local` (see `.env.local.example`).
 
-Also set `ADMIN_API_SECRET` in Convex to match your local env:
+Bootstrap the default admin user in Convex (only needed once per deployment):
 
 ```bash
-npx convex env set ADMIN_API_SECRET spiritual-yatra-admin-api-secret-dev
+npm run seed
+# or: npx convex run adminAuth:ensureDefaultAdmin
 ```
 
 ## Admin Dashboard
 
 Protected admin area at `/admin` (linked from the footer).
 
-Default credentials (change via env vars):
+Admin users are stored in Convex (`adminUsers`, `adminSessions`). Default credentials after seeding:
 
 - Username: `admin-user`
 - Password: `password`
 
-Required env vars: `ADMIN_USERNAME`, `ADMIN_PASSWORD`, `ADMIN_SESSION_SECRET`, `ADMIN_API_SECRET`.
+Change the password after first login in production. No admin credentials are required in Vercel env vars — only `NEXT_PUBLIC_CONVEX_URL`.
 
 Features: manage destinations, packages, testimonials, and contact inquiries; upload images via Convex File Storage.
 
@@ -142,8 +143,7 @@ Features: manage destinations, packages, testimonials, and contact inquiries; up
 This app uses Next.js with Convex. Deploy to **Vercel** (recommended) with:
 
 - `NEXT_PUBLIC_CONVEX_URL`
-- `ADMIN_*` environment variables
-- Run `npm run convex:deploy` for production Convex functions
+- Run `npm run convex:deploy` and `npx convex run adminAuth:ensureDefaultAdmin` for production Convex
 
 ## License
 

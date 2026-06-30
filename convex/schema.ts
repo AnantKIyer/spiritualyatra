@@ -87,4 +87,18 @@ export default defineSchema({
   })
     .index("by_package", ["packageSlug"])
     .index("by_type", ["type"]),
+
+  adminUsers: defineTable({
+    username: v.string(),
+    passwordHash: v.string(),
+    displayName: v.optional(v.string()),
+    role: v.literal("admin"),
+    active: v.boolean(),
+  }).index("by_username", ["username"]),
+
+  adminSessions: defineTable({
+    token: v.string(),
+    userId: v.id("adminUsers"),
+    expiresAt: v.number(),
+  }).index("by_token", ["token"]),
 });

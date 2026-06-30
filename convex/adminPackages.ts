@@ -1,6 +1,6 @@
 import { mutation } from "./_generated/server";
 import { v } from "convex/values";
-import { assertAdminSecret } from "./lib/adminAuth";
+import { assertAdminSession } from "./lib/adminAuth";
 import { packageInput } from "./validators";
 import type { MutationCtx } from "./_generated/server";
 import type { Id } from "./_generated/dataModel";
@@ -21,11 +21,11 @@ async function assertUniqueSlug(
 
 export const create = mutation({
   args: {
-    adminSecret: v.string(),
+    sessionToken: v.string(),
     data: packageInput,
   },
-  handler: async (ctx, { adminSecret, data }) => {
-    assertAdminSecret(adminSecret);
+  handler: async (ctx, { sessionToken, data }) => {
+    await assertAdminSession(ctx, sessionToken);
     await assertUniqueSlug(ctx, data.slug);
     return await ctx.db.insert("packages", data);
   },
@@ -33,12 +33,12 @@ export const create = mutation({
 
 export const update = mutation({
   args: {
-    adminSecret: v.string(),
+    sessionToken: v.string(),
     id: v.id("packages"),
     data: packageInput,
   },
-  handler: async (ctx, { adminSecret, id, data }) => {
-    assertAdminSecret(adminSecret);
+  handler: async (ctx, { sessionToken, id, data }) => {
+    await assertAdminSession(ctx, sessionToken);
     const existing = await ctx.db.get(id);
     if (!existing) throw new Error("Package not found");
     await assertUniqueSlug(ctx, data.slug, id);
@@ -49,12 +49,12 @@ export const update = mutation({
 
 export const setBoost = mutation({
   args: {
-    adminSecret: v.string(),
+    sessionToken: v.string(),
     id: v.id("packages"),
     boosted: v.boolean(),
   },
-  handler: async (ctx, { adminSecret, id, boosted }) => {
-    assertAdminSecret(adminSecret);
+  handler: async (ctx, { sessionToken, id, boosted }) => {
+    await assertAdminSession(ctx, sessionToken);
     const existing = await ctx.db.get(id);
     if (!existing) throw new Error("Package not found");
     await ctx.db.patch(id, {
@@ -67,11 +67,11 @@ export const setBoost = mutation({
 
 export const remove = mutation({
   args: {
-    adminSecret: v.string(),
+    sessionToken: v.string(),
     id: v.id("packages"),
   },
-  handler: async (ctx, { adminSecret, id }) => {
-    assertAdminSecret(adminSecret);
+  handler: async (ctx, { sessionToken, id }) => {
+    await assertAdminSession(ctx, sessionToken);
     const existing = await ctx.db.get(id);
     if (!existing) throw new Error("Package not found");
     await ctx.db.delete(id);

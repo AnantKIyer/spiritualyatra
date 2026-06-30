@@ -5,6 +5,8 @@ import { motion } from "motion/react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import DestinationCard from "@/components/sections/DestinationCard";
+import ConvexConfigNotice from "@/components/convex/ConvexConfigNotice";
+import { isConvexConfigured } from "@/lib/convex/url";
 import { toDestinations } from "@/lib/convex/map";
 import type { LocationLabel } from "@/types";
 
@@ -20,7 +22,11 @@ const ALL_LABELS: LocationLabel[] = [
 ];
 
 export default function DestinationsClient() {
-  const destinationDocs = useQuery(api.destinations.list);
+  const configured = isConvexConfigured();
+  const destinationDocs = useQuery(
+    api.destinations.list,
+    configured ? {} : "skip",
+  );
   const destinations = useMemo(
     () => (destinationDocs ? toDestinations(destinationDocs) : []),
     [destinationDocs],
@@ -55,6 +61,10 @@ export default function DestinationsClient() {
 
     return result;
   }, [destinations, activeLabel, priceSort, alphaSort]);
+
+  if (!configured) {
+    return <ConvexConfigNotice />;
+  }
 
   if (destinationDocs === undefined) {
     return (

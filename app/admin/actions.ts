@@ -5,8 +5,8 @@ import { redirect } from "next/navigation";
 import { fetchMutation, fetchQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
-import { getAdminSecret, requireAdminSession } from "@/lib/admin/auth";
-import { createSessionToken, SESSION_COOKIE } from "@/lib/admin/session";
+import { requireSessionToken, requireAdminSession } from "@/lib/admin/auth";
+import { SESSION_COOKIE } from "@/lib/admin/session";
 
 export type ActionResult = { success: true } | { success: false; error: string };
 
@@ -68,28 +68,43 @@ export async function loginAction(formData: FormData): Promise<ActionResult> {
   const username = formData.get("username")?.toString() ?? "";
   const password = formData.get("password")?.toString() ?? "";
 
-  const expectedUser = process.env.ADMIN_USERNAME ?? "admin-user";
-  const expectedPass = process.env.ADMIN_PASSWORD ?? "password";
+  try {
+    const result = await fetchMutation(api.adminAuth.login, {
+      username,
+      password,
+    });
 
-  if (username !== expectedUser || password !== expectedPass) {
-    return { success: false, error: "Invalid username or password" };
+    const cookieStore = await cookies();
+    cookieStore.set(SESSION_COOKIE, result.token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 8,
+    });
+  } catch (error) {
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "Invalid username or password",
+    };
   }
-
-  const token = await createSessionToken();
-  const cookieStore = await cookies();
-  cookieStore.set(SESSION_COOKIE, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 8,
-  });
 
   redirect("/admin");
 }
 
 export async function logoutAction(): Promise<void> {
   const cookieStore = await cookies();
+  const token = cookieStore.get(SESSION_COOKIE)?.value;
+
+  if (token) {
+    try {
+      await fetchMutation(api.adminAuth.logout, { sessionToken: token });
+    } catch {
+      // Clear the cookie even if Convex logout fails.
+    }
+  }
+
   cookieStore.delete(SESSION_COOKIE);
   redirect("/admin/login");
 }
@@ -97,7 +112,7 @@ export async function logoutAction(): Promise<void> {
 export async function getUploadUrlAction(): Promise<{ uploadUrl: string }> {
   await requireAdminSession();
   const uploadUrl = await fetchMutation(api.files.generateUploadUrl, {
-    adminSecret: getAdminSecret(),
+    sessionToken: await requireSessionToken(),
   });
   return { uploadUrl };
 }
@@ -118,7 +133,7 @@ export async function createDestinationAction(
   await requireAdminSession();
   try {
     await fetchMutation(api.adminDestinations.create, {
-      adminSecret: getAdminSecret(),
+      sessionToken: await requireSessionToken(),
       data,
     });
     return { success: true };
@@ -137,7 +152,7 @@ export async function updateDestinationAction(
   await requireAdminSession();
   try {
     await fetchMutation(api.adminDestinations.update, {
-      adminSecret: getAdminSecret(),
+      sessionToken: await requireSessionToken(),
       id,
       data,
     });
@@ -156,7 +171,7 @@ export async function deleteDestinationAction(
   await requireAdminSession();
   try {
     await fetchMutation(api.adminDestinations.remove, {
-      adminSecret: getAdminSecret(),
+      sessionToken: await requireSessionToken(),
       id,
     });
     return { success: true };
@@ -174,7 +189,7 @@ export async function createPackageAction(
   await requireAdminSession();
   try {
     await fetchMutation(api.adminPackages.create, {
-      adminSecret: getAdminSecret(),
+      sessionToken: await requireSessionToken(),
       data,
     });
     return { success: true };
@@ -193,7 +208,7 @@ export async function updatePackageAction(
   await requireAdminSession();
   try {
     await fetchMutation(api.adminPackages.update, {
-      adminSecret: getAdminSecret(),
+      sessionToken: await requireSessionToken(),
       id,
       data,
     });
@@ -212,7 +227,7 @@ export async function deletePackageAction(
   await requireAdminSession();
   try {
     await fetchMutation(api.adminPackages.remove, {
-      adminSecret: getAdminSecret(),
+      sessionToken: await requireSessionToken(),
       id,
     });
     return { success: true };
@@ -230,7 +245,7 @@ export async function createTestimonialAction(
   await requireAdminSession();
   try {
     await fetchMutation(api.adminTestimonials.create, {
-      adminSecret: getAdminSecret(),
+      sessionToken: await requireSessionToken(),
       data,
     });
     return { success: true };
@@ -249,7 +264,7 @@ export async function updateTestimonialAction(
   await requireAdminSession();
   try {
     await fetchMutation(api.adminTestimonials.update, {
-      adminSecret: getAdminSecret(),
+      sessionToken: await requireSessionToken(),
       id,
       data,
     });
@@ -268,7 +283,7 @@ export async function deleteTestimonialAction(
   await requireAdminSession();
   try {
     await fetchMutation(api.adminTestimonials.remove, {
-      adminSecret: getAdminSecret(),
+      sessionToken: await requireSessionToken(),
       id,
     });
     return { success: true };
@@ -287,7 +302,7 @@ export async function updateInquiryStatusAction(
   await requireAdminSession();
   try {
     await fetchMutation(api.contactInquiries.updateStatus, {
-      adminSecret: getAdminSecret(),
+      sessionToken: await requireSessionToken(),
       id,
       status,
     });
@@ -307,7 +322,7 @@ export async function setPackageBoostAction(
   await requireAdminSession();
   try {
     await fetchMutation(api.adminPackages.setBoost, {
-      adminSecret: getAdminSecret(),
+      sessionToken: await requireSessionToken(),
       id,
       boosted,
     });

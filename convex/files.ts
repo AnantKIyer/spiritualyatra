@@ -1,11 +1,11 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
-import { assertAdminSecret } from "./lib/adminAuth";
+import { assertAdminSession } from "./lib/adminAuth";
 
 export const generateUploadUrl = mutation({
-  args: { adminSecret: v.string() },
-  handler: async (ctx, { adminSecret }) => {
-    assertAdminSecret(adminSecret);
+  args: { sessionToken: v.string() },
+  handler: async (ctx, { sessionToken }) => {
+    await assertAdminSession(ctx, sessionToken);
     return await ctx.storage.generateUploadUrl();
   },
 });

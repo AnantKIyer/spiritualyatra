@@ -1,6 +1,6 @@
 import { fetchQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
-import { getAdminSecret } from "@/lib/admin/auth";
+import { requireSessionToken } from "@/lib/admin/auth";
 import InquiriesTable from "@/components/admin/InquiriesTable";
 
 export const dynamic = "force-dynamic";
@@ -11,7 +11,7 @@ export const metadata = {
 
 export default async function AdminInquiriesPage() {
   const inquiries = await fetchQuery(api.contactInquiries.list, {
-    adminSecret: getAdminSecret(),
+    sessionToken: await requireSessionToken(),
   });
 
   return (

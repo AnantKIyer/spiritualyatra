@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { fetchQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
-import { getAdminSecret } from "@/lib/admin/auth";
+import { requireSessionToken } from "@/lib/admin/auth";
 import StatCard from "@/components/admin/StatCard";
 import TrendAreaChart from "@/components/admin/TrendAreaChart";
 import DonutChart from "@/components/admin/DonutChart";
@@ -73,13 +73,13 @@ function buildInsights(popularity: PopularityRow[], stats: StatsRow) {
 }
 
 export default async function AdminDashboardPage() {
-  const adminSecret = getAdminSecret();
+  const sessionToken = await requireSessionToken();
 
   const [stats, popularity, trend, inquiries] = await Promise.all([
-    fetchQuery(api.analytics.getStats, { adminSecret }),
-    fetchQuery(api.analytics.packagePopularity, { adminSecret }),
-    fetchQuery(api.analytics.inquiriesOverTime, { adminSecret }),
-    fetchQuery(api.contactInquiries.list, { adminSecret }),
+    fetchQuery(api.analytics.getStats, { sessionToken }),
+    fetchQuery(api.analytics.packagePopularity, { sessionToken }),
+    fetchQuery(api.analytics.inquiriesOverTime, { sessionToken }),
+    fetchQuery(api.contactInquiries.list, { sessionToken }),
   ]);
 
   const insights = buildInsights(popularity, stats);

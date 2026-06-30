@@ -1,11 +1,11 @@
 import { query } from "./_generated/server";
 import { v } from "convex/values";
-import { assertAdminSecret } from "./lib/adminAuth";
+import { assertAdminSession } from "./lib/adminAuth";
 
 export const getStats = query({
-  args: { adminSecret: v.string() },
-  handler: async (ctx, { adminSecret }) => {
-    assertAdminSecret(adminSecret);
+  args: { sessionToken: v.string() },
+  handler: async (ctx, { sessionToken }) => {
+    await assertAdminSession(ctx, sessionToken);
 
     const [packages, destinations, testimonials, inquiries, events] =
       await Promise.all([
@@ -47,9 +47,9 @@ export const getStats = query({
 });
 
 export const packagePopularity = query({
-  args: { adminSecret: v.string() },
-  handler: async (ctx, { adminSecret }) => {
-    assertAdminSecret(adminSecret);
+  args: { sessionToken: v.string() },
+  handler: async (ctx, { sessionToken }) => {
+    await assertAdminSession(ctx, sessionToken);
 
     const [packages, events, inquiries] = await Promise.all([
       ctx.db.query("packages").collect(),
@@ -108,9 +108,9 @@ export const packagePopularity = query({
 });
 
 export const inquiriesOverTime = query({
-  args: { adminSecret: v.string() },
-  handler: async (ctx, { adminSecret }) => {
-    assertAdminSecret(adminSecret);
+  args: { sessionToken: v.string() },
+  handler: async (ctx, { sessionToken }) => {
+    await assertAdminSession(ctx, sessionToken);
 
     const inquiries = await ctx.db.query("contactInquiries").collect();
     const now = Date.now();

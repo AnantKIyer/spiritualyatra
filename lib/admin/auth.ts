@@ -1,26 +1,40 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { SESSION_COOKIE, verifySessionToken } from "./session";
+import { fetchQuery } from "convex/nextjs";
+import { api } from "@/convex/_generated/api";
+import { getSessionToken, SESSION_COOKIE } from "./session";
 
-export function getAdminSecret(): string {
-  const secret = process.env.ADMIN_API_SECRET;
-  if (!secret) {
-    throw new Error("ADMIN_API_SECRET is not configured");
-  }
-  return secret;
-}
+export { SESSION_COOKIE, getSessionToken };
 
 export async function requireAdminSession(): Promise<void> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(SESSION_COOKIE)?.value;
-  if (!token || !(await verifySessionToken(token))) {
+  const token = await getSessionToken();
+  if (!token) {
+    redirect("/admin/login");
+  }
+
+  const session = await fetchQuery(api.adminAuth.validateSession, {
+    sessionToken: token,
+  });
+
+  if (!session) {
     redirect("/admin/login");
   }
 }
 
 export async function isAdminSessionValid(): Promise<boolean> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(SESSION_COOKIE)?.value;
+  const token = await getSessionToken();
   if (!token) return false;
-  return verifySessionToken(token);
+
+  const session = await fetchQuery(api.adminAuth.validateSession, {
+    sessionToken: token,
+  });
+  return Boolean(session);
+}
+
+export async function requireSessionToken(): Promise<string> {
+  const token = await getSessionToken();
+  if (!token) {
+    throw new Error("Admin session is required");
+  }
+  return token;
 }
