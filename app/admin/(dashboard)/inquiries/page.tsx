@@ -1,4 +1,4 @@
-import { fetchQuery } from "convex/nextjs";
+import { fetchQuery } from "@/lib/convex/server";
 import { api } from "@/convex/_generated/api";
 import { requireSessionToken } from "@/lib/admin/auth";
 import InquiriesTable from "@/components/admin/InquiriesTable";

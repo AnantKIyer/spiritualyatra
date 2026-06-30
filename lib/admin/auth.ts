@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { fetchQuery } from "convex/nextjs";
+import { fetchQuery } from "@/lib/convex/server";
 import { api } from "@/convex/_generated/api";
 import { getSessionToken, SESSION_COOKIE } from "./session";
 

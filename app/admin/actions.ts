@@ -2,7 +2,7 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { fetchMutation, fetchQuery } from "convex/nextjs";
+import { fetchMutation, fetchQuery } from "@/lib/convex/server";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { requireSessionToken, requireAdminSession } from "@/lib/admin/auth";

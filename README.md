@@ -110,7 +110,7 @@ npm run convex:dev   # sync Convex functions locally
 npm run seed         # import seed data from lib/data/
 ```
 
-Set `NEXT_PUBLIC_CONVEX_URL` in `.env.local` (see `.env.local.example`).
+Set `NEXT_PUBLIC_CONVEX_URL` in `.env.local` (see `.env.local.example`). **Do not include a trailing slash** — `https://fine-ant-169.convex.cloud` not `...cloud/`.
 
 Bootstrap the default admin user in Convex (only needed once per deployment):
 

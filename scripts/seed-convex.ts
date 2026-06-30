@@ -5,6 +5,7 @@ import { api } from "../convex/_generated/api";
 import { destinations } from "../lib/data/destinations";
 import { packages } from "../lib/data/packages";
 import { testimonials } from "../lib/data/testimonials";
+import { normalizeConvexUrl } from "../lib/convex/url";
 
 function loadEnvLocal() {
   const envPath = join(__dirname, "../.env.local");
@@ -22,7 +23,9 @@ function loadEnvLocal() {
 
 loadEnvLocal();
 
-const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
+const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL
+  ? normalizeConvexUrl(process.env.NEXT_PUBLIC_CONVEX_URL)
+  : undefined;
 if (!convexUrl) {
   throw new Error("NEXT_PUBLIC_CONVEX_URL is not set");
 }
