@@ -6,51 +6,65 @@ import Button from "@/components/ui/Button";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isOverWhiteBackground, setIsOverWhiteBackground] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      // Check if we've scrolled past the hero section (approximately 90vh)
-      const heroHeight = window.innerHeight * 0.9;
-      setIsOverWhiteBackground(window.scrollY > heroHeight);
+      setIsScrolled(window.scrollY > 60);
     };
-
-    window.addEventListener("scroll", handleScroll);
-    handleScroll(); // Check initial state
-
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const navLinks = [
     { href: "/", label: "Home" },
-    { href: "/destinations", label: "Destination" },
+    { href: "/destinations", label: "Destinations" },
     { href: "/packages", label: "Packages" },
     { href: "/about", label: "About" },
   ];
 
   return (
     <header
-      className={`sticky top-0 z-50 py-4 transition-all duration-300 bg-transparent`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled
+          ? "bg-white/90 backdrop-blur-md shadow-md py-3"
+          : "bg-transparent py-4"
+      }`}
     >
       <nav className="max-w-7xl mx-auto px-6 lg:px-10">
         <div className="flex items-center justify-between">
-          {/* Logo - Left Aligned */}
           <Link
             href="/"
-            className="text-xl md:text-2xl font-medium transition-colors z-10 drop-shadow-lg"
+            className={`font-display text-xl md:text-2xl transition-colors z-10 ${
+              isScrolled ? "text-ink-900" : "text-white drop-shadow-lg"
+            }`}
           >
-            <span className="text-accent-500">Spiritual </span>
-            <span className="text-red-500">Yatra</span>
+            <span className="text-saffron-500">Spiritual </span>
+            <span
+              className={isScrolled ? "text-maroon-600" : "text-saffron-300"}
+            >
+              Yatra
+            </span>
           </Link>
 
-          {/* Center Navigation - Translucent Pill */}
-          <div className="hidden md:flex items-center justify-center absolute left-1/2 transform -translate-x-1/2">
-            <div className="bg-white/50 backdrop-blur-md rounded-full px-6 py-3 border border-white/20 material-elevation-2 flex items-center space-x-6">
+          <div className="hidden md:flex items-center justify-center absolute left-1/2 -translate-x-1/2">
+            <div
+              className={`rounded-full px-6 py-2.5 flex items-center gap-6 transition-all ${
+                isScrolled
+                  ? "bg-ink-50 border border-ink-200"
+                  : "bg-white/15 backdrop-blur-md border border-white/20"
+              }`}
+            >
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-primary-700 hover:text-accent-500 transition-colors font-medium text-sm"
+                  className={`text-sm font-medium transition-colors ${
+                    isScrolled
+                      ? "text-ink-700 hover:text-saffron-600"
+                      : "text-white/90 hover:text-saffron-300"
+                  }`}
                 >
                   {link.label}
                 </Link>
@@ -58,7 +72,6 @@ export default function Header() {
             </div>
           </div>
 
-          {/* Contact Button - Right Aligned */}
           <div className="hidden md:block z-10">
             <Link href="/contact">
               <Button variant="primary" size="sm">
@@ -67,12 +80,10 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* Mobile Menu Button */}
           <button
-            className={`md:hidden focus:outline-none transition-colors p-2 z-10 ${
-              isOverWhiteBackground
-                ? "text-primary-700 hover:text-accent-500 drop-shadow-none"
-                : "text-white hover:text-accent-300 drop-shadow-lg"
+            type="button"
+            className={`md:hidden p-2 z-10 ${
+              isScrolled ? "text-ink-800" : "text-white"
             }`}
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Toggle menu"
@@ -95,26 +106,21 @@ export default function Header() {
           </button>
         </div>
 
-        {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden mt-4 pb-4 bg-white/95 backdrop-blur-md rounded-lg p-4 border border-white/20 material-elevation-2">
-            <div className="flex flex-col space-y-2">
+          <div className="md:hidden mt-4 bg-white rounded-xl p-4 border border-ink-200 shadow-lg">
+            <div className="flex flex-col gap-1">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-primary-700 hover:text-accent-500 hover:bg-primary-50 transition-colors font-medium py-2.5 px-3 rounded-md text-sm"
+                  className="text-ink-700 hover:text-saffron-600 hover:bg-saffron-50 font-medium py-2.5 px-3 rounded-lg text-sm"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {link.label}
                 </Link>
               ))}
-              <div className="pt-2 border-t border-primary-200">
-                <Link
-                  href="/contact"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="block"
-                >
+              <div className="pt-2 border-t border-ink-100 mt-2">
+                <Link href="/contact" onClick={() => setIsMenuOpen(false)}>
                   <Button variant="primary" size="sm" className="w-full">
                     Contact
                   </Button>

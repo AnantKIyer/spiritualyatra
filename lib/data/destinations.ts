@@ -1,331 +1,674 @@
-import { Destination } from '@/types';
+import type { Destination, LocationLabel, TripPlanDay } from "@/types";
+import { locations } from "@/lib/data/locations";
 
-export const destinations: Destination[] = [
+const UNSPLASH = (id: string) =>
+  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=1200&q=80`;
+
+type DestinationSeed = {
+  id: string;
+  state: string;
+  description: string;
+  longDescription: string;
+  duration: string;
+  bestTime: string;
+  experiences: string[];
+  tripPlan: TripPlanDay[];
+  gallery?: string[];
+};
+
+function buildDestination(seed: DestinationSeed): Destination {
+  const location = locations.find((l) => l.id === seed.id);
+  if (!location) {
+    throw new Error(`No location found for destination id: ${seed.id}`);
+  }
+
+  return {
+    id: seed.id,
+    name: location.name,
+    description: seed.description,
+    longDescription: seed.longDescription,
+    image: location.image,
+    gallery: seed.gallery ?? [location.image, location.image],
+    location: `${seed.state}, India`,
+    highlights: location.highlights,
+    labels: location.labels,
+    basePrice: location.basePrice,
+    duration: seed.duration,
+    bestTime: seed.bestTime,
+    experiences: seed.experiences,
+    tripPlan: seed.tripPlan,
+  };
+}
+
+const defaultTripPlan = (name: string, activities: string[]): TripPlanDay[] => [
   {
-    id: 'varanasi',
-    name: 'Varanasi',
-    description: 'The spiritual capital of India, where the Ganges flows and ancient traditions come alive.',
-    image: '/images/varanasi_dest.webp',
-    location: 'Uttar Pradesh, India',
-    highlights: ['Ganga Aarti', 'Ancient Temples', 'Spiritual Ghats', 'Yoga & Meditation'],
-    labels: ['spiritual', 'historic'],
-    basePrice: 12000,
-    duration: '3-5 days',
-    tripPlan: [
-      {
-        day: 'Day 1',
-        title: 'Ghats & Sunrise Rituals',
-        description:
-          'Arrive at Assi Ghat before dawn, witness the mesmerizing Subah-e-Banaras ceremony, and take a boat ride along the Ganges.',
-        activities: [
-          'Sunrise boat ride with local guide',
-          'Manikarnika & Dashashwamedh Ghat walk',
-          'Evening Ganga Aarti participation',
-        ],
-      },
-      {
-        day: 'Day 2',
-        title: 'Temple & Heritage Circuit',
-        description:
-          'Explore Kashi Vishwanath and other sacred temples, followed by a stroll through Varanasi’s ancient alleys.',
-        activities: [
-          'Kashi Vishwanath Darshan with priority access',
-          'Kala Bhairav & Annapurna Devi visits',
-          'Sarnath museum and stupas excursion',
-        ],
-      },
-      {
-        day: 'Day 3',
-        title: 'Cultural Immersion',
-        description:
-          'Engage with local artisans, attend a classical music baithak, and enjoy a traditional Banarasi thali.',
-        activities: [
-          'Silk weaving workshop',
-          'Private classical music session',
-          'Ayurvedic wellness consultation',
-        ],
-      },
-    ],
+    day: "Day 1",
+    title: `Arrival & First Impressions of ${name}`,
+    description: `Settle in and begin exploring the essence of ${name} with a guided orientation walk and local welcome experience.`,
+    activities: activities.slice(0, 3),
   },
   {
-    id: 'rishikesh',
-    name: 'Rishikesh',
-    description: 'The yoga capital of the world, nestled in the foothills of the Himalayas.',
-    image: '/images/rishikesh_dest.jpeg',
-    location: 'Uttarakhand, India',
-    highlights: ['Yoga Retreats', 'Ganga River', 'Adventure Sports', 'Ashrams'],
-    labels: ['spiritual', 'adventure', 'excursion'],
-    basePrice: 10000,
-    duration: '4-7 days',
-    tripPlan: [
-      {
-        day: 'Day 1',
-        title: 'Arrival & Ganga Blessings',
-        description:
-          'Check into a riverside ashram, unwind with herbal tea, and attend the Parmarth Niketan Ganga Aarti.',
-        activities: [
-          'Welcome orientation with yoga guru',
-          'Sunset walk on the ghats',
-          'Sound healing session',
-        ],
-      },
-      {
-        day: 'Day 2-3',
-        title: 'Yoga & Meditation Immersion',
-        description:
-          'Deepen your practice with sunrise yoga, guided meditation, and satsangs with resident monks.',
-        activities: [
-          'Twice-daily yoga classes',
-          'Pranayama and yoga nidra workshops',
-          'Ayurvedic meals & nutrition talk',
-        ],
-      },
-      {
-        day: 'Day 4',
-        title: 'Nature & Adventure',
-        description:
-          'Experience the Himalayas through gentle treks or white-water rafting capped with a spa treatment.',
-        activities: [
-          'Neer Garh waterfall hike',
-          'Optional rafting on the Ganges',
-          'Himalayan herbal spa therapy',
-        ],
-      },
-    ],
+    day: "Day 2",
+    title: `Deep Dive into ${name}`,
+    description: `Spend a full day immersed in the landmarks, culture, and stories that make ${name} unforgettable.`,
+    activities:
+      activities.length > 3
+        ? activities.slice(3, 6)
+        : [
+            `Guided heritage walk`,
+            `Local cuisine experience`,
+            `Sunset viewpoint visit`,
+          ],
   },
   {
-    id: 'haridwar',
-    name: 'Haridwar',
-    description: 'Gateway to the Gods, where the Ganges enters the plains from the mountains.',
-    image: '/images/haridwar_dest.jpg',
-    location: 'Uttarakhand, India',
-    highlights: ['Har Ki Pauri', 'Kumbh Mela', 'Temples', 'Ganga Aarti'],
-    labels: ['spiritual', 'excursion'],
-    basePrice: 8000,
-    duration: '2-3 days',
-    tripPlan: [
-      {
-        day: 'Day 1',
-        title: 'Temple Trail',
-        description:
-          'Visit Mansa Devi and Chandi Devi temples via ropeway for panoramic views of the sacred city.',
-        activities: [
-          'Cable-car ride to Mansa Devi',
-          'Chandi Devi darshan',
-          'Local bazaar walk for prasad & crafts',
-        ],
-      },
-      {
-        day: 'Day 2',
-        title: 'Ganga Immersion',
-        description:
-          'Take a holy dip at Har Ki Pauri, learn Vedic chanting, and join priests for the grand evening aarti.',
-        activities: [
-          'Guided snan (ritual bath)',
-          'Vedic mantra learning circle',
-          'VIP seating for evening aarti',
-        ],
-      },
-      {
-        day: 'Day 3',
-        title: 'Wellness & Ashram Life',
-        description:
-          'Spend time at Shantikunj ashram, practice mindfulness, and enjoy sattvic meals before departure.',
-        activities: [
-          'Mindfulness workshop',
-          'Community service hour',
-          'Sattvic lunch experience',
-        ],
-      },
-    ],
-  },
-  {
-    id: 'bodhgaya',
-    name: 'Bodhgaya',
-    description: 'Where Buddha attained enlightenment, a sacred pilgrimage site for Buddhists worldwide.',
-    image: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=900&q=80',
-    location: 'Bihar, India',
-    highlights: ['Mahabodhi Temple', 'Buddha Statue', 'Meditation Centers', 'Peace Pagoda'],
-    labels: ['spiritual', 'historic'],
-    basePrice: 9000,
-    duration: '2-4 days',
-    tripPlan: [
-      {
-        day: 'Day 1',
-        title: 'Mahabodhi Temple',
-        description:
-          'Offer prayers under the Bodhi tree, meditate near the Vajrasana, and explore the temple complex.',
-        activities: [
-          'Guided walking meditation',
-          'Pali chanting with monks',
-          'Visit to royal Bhutan monastery',
-        ],
-      },
-      {
-        day: 'Day 2',
-        title: 'Footsteps of Buddha',
-        description:
-          'Discover sites like Sujata Garh and Dungeshwari caves that marked pivotal moments in Buddha’s life.',
-        activities: [
-          'Cycling tour to Sujata village',
-          'Dungeshwari cave meditation',
-          'Community lunch with monks',
-        ],
-      },
-      {
-        day: 'Day 3',
-        title: 'Mindfulness Retreat',
-        description:
-          'Spend a silent retreat at a local meditation center and close with a metta (loving-kindness) session.',
-        activities: [
-          'Silent retreat orientation',
-          'Vipassana practice block',
-          'Closing metta ceremony',
-        ],
-      },
-    ],
-  },
-  {
-    id: 'amritsar',
-    name: 'Amritsar',
-    description: 'Home to the Golden Temple, the holiest shrine of Sikhism.',
-    image: 'https://images.unsplash.com/photo-1582979512210-de1c28e4c4ff?auto=format&fit=crop&w=900&q=80',
-    location: 'Punjab, India',
-    highlights: ['Golden Temple', 'Langar', 'Jallianwala Bagh', 'Wagah Border'],
-    labels: ['spiritual', 'historic', 'excursion'],
-    basePrice: 11000,
-    duration: '2-3 days',
-    tripPlan: [
-      {
-        day: 'Day 1',
-        title: 'Golden Temple Immersion',
-        description:
-          'Participate in the palki ceremony, volunteer at the langar, and learn about Sikh history.',
-        activities: [
-          'Guided walkthrough of Harmandir Sahib',
-          'Seva (service) in the community kitchen',
-          'Museum visit inside the complex',
-        ],
-      },
-      {
-        day: 'Day 2',
-        title: 'Heritage & Culture',
-        description:
-          'Pay respects at Jallianwala Bagh, stroll through the heritage lane, and savor Amritsari cuisine.',
-        activities: [
-          'Jallianwala Bagh memorial tour',
-          'Heritage Street food trail',
-          'Hands-on phulkari embroidery demo',
-        ],
-      },
-      {
-        day: 'Day 3',
-        title: 'Wagah Border & Farm Stay',
-        description:
-          'Witness the iconic Wagah ceremony and unwind at a Punjabi farmhouse with folk music.',
-        activities: [
-          'VIP seating at Wagah Border',
-          'Visit to Partition Museum',
-          'Evening bonfire with folk artists',
-        ],
-      },
-    ],
-  },
-  {
-    id: 'tirupati',
-    name: 'Tirupati',
-    description: 'Famous for the Venkateswara Temple, one of the richest and most visited temples in the world.',
-    image: 'https://images.unsplash.com/photo-1548013146-c23c86e2c5d4?auto=format&fit=crop&w=900&q=80',
-    location: 'Andhra Pradesh, India',
-    highlights: ['Venkateswara Temple', 'Tirumala Hills', 'Pilgrimage', 'Spiritual Heritage'],
-    labels: ['spiritual'],
-    basePrice: 9500,
-    duration: '2-3 days',
-    tripPlan: [
-      {
-        day: 'Day 1',
-        title: 'Temple Darshan',
-        description:
-          'Ascend Tirumala Hills, complete seva rituals, and enjoy panoramic views from the sacred complex.',
-        activities: [
-          'Special entry darshan arrangements',
-          'Laddu prasadam making experience',
-          'Visit to Varaha swamy temple',
-        ],
-      },
-      {
-        day: 'Day 2',
-        title: 'Sacred Trails',
-        description:
-          'Explore the serene water bodies and lesser-known shrines around Tirupati with a heritage expert.',
-        activities: [
-          'Kapila Theertham waterfall visit',
-          'Sri Kalyana Venkateswara Temple tour',
-          'Local bhajan evening',
-        ],
-      },
-      {
-        day: 'Day 3',
-        title: 'Wellness & Departure',
-        description:
-          'Unwind with Ayurvedic therapies, shop for local crafts, and enjoy a traditional Andhra feast.',
-        activities: [
-          'Ayurvedic abhyanga session',
-          'Wood-carving artisan meet',
-          'Farewell Andhra sadhya meal',
-        ],
-      },
-    ],
-  },
-  {
-    id: 'udaipur',
-    name: 'Udaipur',
-    description: 'The City of Lakes, a romantic destination with stunning palaces, serene lakes, and royal heritage.',
-    image: '/images/udaipur_dest.jpg',
-    location: 'Rajasthan, India',
-    highlights: ['City Palace and Lake Pichola', 'Sunset boat ride', 'Rooftop candle-light dining'],
-    labels: ['romantic', 'historic'],
-    basePrice: 14000,
-    duration: '3-4 days',
-    tripPlan: [
-      {
-        day: 'Day 1',
-        title: 'Palace & Lake Arrival',
-        description:
-          'Arrive in the City of Lakes, check into a heritage hotel, and begin with a visit to the magnificent City Palace overlooking Lake Pichola.',
-        activities: [
-          'City Palace guided tour with royal history',
-          'Jagdish Temple visit',
-          'Evening boat ride on Lake Pichola',
-        ],
-      },
-      {
-        day: 'Day 2',
-        title: 'Heritage & Culture',
-        description:
-          'Explore the intricate architecture of Saheliyon-ki-Bari, visit the vintage car museum, and enjoy traditional Rajasthani cuisine.',
-        activities: [
-          'Saheliyon-ki-Bari gardens tour',
-          'Vintage car museum visit',
-          'Traditional Rajasthani thali dinner',
-        ],
-      },
-      {
-        day: 'Day 3',
-        title: 'Romantic Experiences',
-        description:
-          'Experience the magic of Udaipur with a sunset boat ride, followed by a romantic rooftop dinner with views of the illuminated palaces.',
-        activities: [
-          'Sunset boat ride on Lake Pichola',
-          'Rooftop candle-light dining experience',
-          'Cultural folk dance performance',
-        ],
-      },
+    day: "Day 3",
+    title: `Farewell & Reflection`,
+    description: `Conclude your journey with meaningful moments, souvenir shopping, and a final panoramic view before departure.`,
+    activities: [
+      `Morning ritual or nature walk`,
+      `Local artisan visit`,
+      `Departure with curated memories`,
     ],
   },
 ];
 
+const seeds: DestinationSeed[] = [
+  {
+    id: "varanasi",
+    state: "Uttar Pradesh",
+    description:
+      "The spiritual capital of India, where the Ganges flows and ancient traditions come alive.",
+    longDescription:
+      "Varanasi is one of the world's oldest living cities — a labyrinth of ghats, temples, and timeless rituals where pilgrims have sought liberation for millennia. Dawn boat rides on the Ganges, the thunderous Ganga Aarti at Dashashwamedh Ghat, and walks through narrow alleys lined with silk weavers create an experience that transforms every visitor.",
+    duration: "3-5 days",
+    bestTime: "October – March",
+    experiences: [
+      "Ganga Aarti",
+      "Boat rides",
+      "Temple darshan",
+      "Silk weaving",
+    ],
+    gallery: [
+      "/images/varanasi_dest.webp",
+      UNSPLASH("photo-1561361518240-790aab8f0a08"),
+      UNSPLASH("photo-1582510004614-8a1e0b0b0b0b"),
+    ],
+    tripPlan: [
+      {
+        day: "Day 1",
+        title: "Ghats & Sunrise Rituals",
+        description:
+          "Arrive at Assi Ghat before dawn, witness Subah-e-Banaras, and take a boat ride along the Ganges.",
+        activities: [
+          "Sunrise boat ride with local guide",
+          "Manikarnika & Dashashwamedh Ghat walk",
+          "Evening Ganga Aarti participation",
+        ],
+      },
+      {
+        day: "Day 2",
+        title: "Temple & Heritage Circuit",
+        description:
+          "Explore Kashi Vishwanath and sacred temples, followed by a stroll through ancient alleys.",
+        activities: [
+          "Kashi Vishwanath Darshan",
+          "Sarnath museum and stupas excursion",
+          "Classical music baithak",
+        ],
+      },
+      {
+        day: "Day 3",
+        title: "Cultural Immersion",
+        description:
+          "Engage with local artisans and enjoy a traditional Banarasi thali.",
+        activities: [
+          "Silk weaving workshop",
+          "Ayurvedic wellness consultation",
+          "Farewell Ganga ceremony",
+        ],
+      },
+    ],
+  },
+  {
+    id: "rishikesh",
+    state: "Uttarakhand",
+    description:
+      "The yoga capital of the world, nestled in the foothills of the Himalayas.",
+    longDescription:
+      "Rishikesh sits where the Ganges exits the Himalayas — a town of ashrams, suspension bridges, and seekers from every corner of the globe. Whether you come for yoga, meditation, white-water rafting, or simply the mountain air, Rishikesh offers a perfect blend of adventure and inner peace.",
+    duration: "4-7 days",
+    bestTime: "September – April",
+    experiences: [
+      "Yoga retreats",
+      "Rafting",
+      "Ashram stays",
+      "Himalayan treks",
+    ],
+    gallery: [
+      "/images/rishikesh_dest.jpeg",
+      UNSPLASH("photo-1506905925346-21bda4d32df4"),
+    ],
+    tripPlan: defaultTripPlan("Rishikesh", [
+      "Parmarth Niketan Ganga Aarti",
+      "Sunrise yoga by the river",
+      "Lakshman Jhula walk",
+      "White-water rafting",
+      "Neer Garh waterfall hike",
+      "Sound healing session",
+    ]),
+  },
+  {
+    id: "haridwar",
+    state: "Uttarakhand",
+    description: "Gateway to the Gods, where the Ganges enters the plains.",
+    longDescription:
+      "Haridwar is where the sacred Ganges leaves the mountains and flows into the heart of India. Pilgrims gather at Har Ki Pauri for the evening aarti, temples crown the hills, and the air carries centuries of devotion.",
+    duration: "2-3 days",
+    bestTime: "October – March",
+    experiences: ["Ganga Aarti", "Temple visits", "Ashram life"],
+    gallery: ["/images/haridwar_dest.jpg"],
+    tripPlan: defaultTripPlan("Haridwar", [
+      "Mansa Devi ropeway",
+      "Har Ki Pauri snan",
+      "Evening aarti VIP seating",
+      "Shantikunj ashram visit",
+      "Sattvic lunch experience",
+    ]),
+  },
+  {
+    id: "prayagraj",
+    state: "Uttar Pradesh",
+    description:
+      "Sacred confluence of the Ganga, Yamuna, and mythical Saraswati.",
+    longDescription:
+      "Prayagraj (Allahabad) is home to the Triveni Sangam — one of Hinduism's holiest sites. Every twelve years the Kumbh Mela transforms this city into the largest gathering on Earth.",
+    duration: "2-4 days",
+    bestTime: "October – March (Kumbh: per schedule)",
+    experiences: ["Sangam boat ride", "Kumbh grounds", "Fort heritage"],
+    gallery: ["/images/prayagraj_dest.jpg"],
+    tripPlan: defaultTripPlan("Prayagraj", [
+      "Triveni Sangam holy dip",
+      "Allahabad Fort tour",
+      "Anand Bhavan museum",
+      "Evening aarti at Sangam",
+    ]),
+  },
+  {
+    id: "udaipur",
+    state: "Rajasthan",
+    description: "The City of Lakes — palaces, romance, and royal heritage.",
+    longDescription:
+      "Udaipur's shimmering lakes, marble palaces, and rooftop dining create India's most romantic destination. Every sunset over Lake Pichola feels like a scene from a fairy tale.",
+    duration: "3-4 days",
+    bestTime: "October – March",
+    experiences: ["Palace tours", "Boat rides", "Rooftop dining"],
+    gallery: ["/images/udaipur_dest.jpg"],
+    tripPlan: defaultTripPlan("Udaipur", [
+      "City Palace guided tour",
+      "Lake Pichola boat ride",
+      "Jagdish Temple visit",
+      "Rooftop candle-light dinner",
+      "Folk dance performance",
+    ]),
+  },
+  {
+    id: "jaipur",
+    state: "Rajasthan",
+    description:
+      "The Pink City — forts, bazaars, and royal Rajasthani culture.",
+    longDescription:
+      "Jaipur dazzles with Amer Fort's hilltop grandeur, the intricate Hawa Mahal, and bustling bazaars selling textiles, jewelry, and handicrafts. It's the gateway to Rajasthan's royal heart.",
+    duration: "3-4 days",
+    bestTime: "October – March",
+    experiences: ["Fort tours", "Bazaar walks", "Rajasthani cuisine"],
+    gallery: ["/images/jaipur_dest.jpg"],
+    tripPlan: defaultTripPlan("Jaipur", [
+      "Amer Fort elephant ride",
+      "Hawa Mahal photo stop",
+      "Pink City heritage walk",
+      "Traditional Rajasthani thali",
+      "Nahargarh sunset views",
+    ]),
+  },
+  {
+    id: "agra",
+    state: "Uttar Pradesh",
+    description: "Home to the Taj Mahal — the ultimate symbol of eternal love.",
+    longDescription:
+      "Agra needs no introduction. The Taj Mahal at sunrise is a moment that stays with you forever. Combined with Agra Fort and local marble craftsmanship, it's an essential Indian pilgrimage.",
+    duration: "2-3 days",
+    bestTime: "October – March",
+    experiences: ["Taj sunrise", "Mughal architecture", "Marble inlay"],
+    gallery: ["/images/agra_dest.jpg"],
+    tripPlan: defaultTripPlan("Agra", [
+      "Taj Mahal sunrise visit",
+      "Agra Fort exploration",
+      "Mehtab Bagh sunset view",
+      "Marble inlay workshop",
+    ]),
+  },
+  {
+    id: "fatehpur-sikri",
+    state: "Uttar Pradesh",
+    description:
+      "Akbar's abandoned Mughal capital — a UNESCO World Heritage site.",
+    longDescription:
+      "Fatehpur Sikri is a ghost city of red sandstone palaces, mosques, and courtyards frozen in the 16th century. Walking its empty halls feels like stepping into history.",
+    duration: "1-2 days",
+    bestTime: "October – March",
+    experiences: ["Mughal architecture", "Buland Darwaza", "Heritage walks"],
+    gallery: ["/images/Fatehpur-Sikri_dest.jpg"],
+    tripPlan: defaultTripPlan("Fatehpur Sikri", [
+      "Buland Darwaza visit",
+      "Jama Masjid tour",
+      "Panch Mahal exploration",
+      "Diwan-i-Khas heritage walk",
+    ]),
+  },
+  {
+    id: "jaisalmer",
+    state: "Rajasthan",
+    description: "The Golden City rising from the Thar Desert.",
+    longDescription:
+      "Jaisalmer's honey-colored fort rises from the desert like a mirage. Camel safaris, folk music under the stars, and intricately carved havelis make this a bucket-list destination.",
+    duration: "3-4 days",
+    bestTime: "October – February",
+    experiences: ["Desert safari", "Golden Fort", "Folk culture"],
+    gallery: ["/images/jaisalmer_dest.webp"],
+    tripPlan: defaultTripPlan("Jaisalmer", [
+      "Golden Fort walk",
+      "Sam sand dunes camel safari",
+      "Folk music under stars",
+      "Patwon Ki Haveli tour",
+      "Desert camp dinner",
+    ]),
+  },
+  {
+    id: "rann-of-kutch",
+    state: "Gujarat",
+    description:
+      "The white salt desert — surreal landscapes under infinite skies.",
+    longDescription:
+      "The Rann of Kutch transforms into a mirror of moonlight during the full moon. Gujarat's handicrafts, folk music, and the Rann Utsav festival create an otherworldly experience.",
+    duration: "3-4 days",
+    bestTime: "November – February",
+    experiences: ["White desert", "Rann Utsav", "Handicrafts"],
+    gallery: ["/images/Rann-of-Kutch_dest.jpg"],
+    tripPlan: defaultTripPlan("Rann of Kutch", [
+      "White desert sunset",
+      "Full moon Rann walk",
+      "Kutch handicraft village",
+      "Folk dance performance",
+      "Traditional Gujarati feast",
+    ]),
+  },
+  {
+    id: "auli",
+    state: "Uttarakhand",
+    description: "Himalayan ski paradise with Nanda Devi views.",
+    longDescription:
+      "Auli offers India's finest skiing with panoramic views of Nanda Devi. Cable car rides, snow-covered slopes, and crisp mountain air make it an adventure lover's dream.",
+    duration: "3-5 days",
+    bestTime: "December – March (ski); May – June (trek)",
+    experiences: ["Skiing", "Cable car", "Mountain views"],
+    gallery: ["/images/auli_dest.jpg"],
+    tripPlan: defaultTripPlan("Auli", [
+      "Cable car to Joshimath",
+      "Ski lesson on gentle slopes",
+      "Nanda Devi viewpoint trek",
+      "Bonfire under stars",
+    ]),
+  },
+  {
+    id: "mussoorie",
+    state: "Uttarakhand",
+    description:
+      "Queen of the Hills — colonial charm and misty mountain views.",
+    longDescription:
+      "Mussoorie's Mall Road, cascading waterfalls, and colonial-era architecture offer a classic hill-station escape with views of the Doon Valley below.",
+    duration: "2-4 days",
+    bestTime: "March – June, September – November",
+    experiences: ["Mall Road", "Waterfalls", "Mountain views"],
+    gallery: [UNSPLASH("photo-1521292270410-a8c53642e9d0")],
+    tripPlan: defaultTripPlan("Mussoorie", [
+      "Kempty Falls visit",
+      "Mall Road stroll",
+      "Gun Hill cable car",
+      "Lal Tibba sunrise",
+    ]),
+  },
+  {
+    id: "vindhya-parvat",
+    state: "Madhya Pradesh",
+    description: "Sacred hills and forested temples of the Vindhya range.",
+    longDescription:
+      "The Vindhya mountains hold ancient temples, meditation caves, and panoramic forest views — a lesser-known spiritual retreat away from crowds.",
+    duration: "2-3 days",
+    bestTime: "October – March",
+    experiences: ["Hilltop temples", "Forest walks", "Meditation"],
+    gallery: [UNSPLASH("photo-1516300523007-3b26d3814a00")],
+    tripPlan: defaultTripPlan("Vindhya Parvat", [
+      "Hilltop temple darshan",
+      "Forest meditation walk",
+      "Sunrise viewpoint trek",
+    ]),
+  },
+  {
+    id: "ayodhya",
+    state: "Uttar Pradesh",
+    description: "Birthplace of Lord Rama — a city reborn in devotion.",
+    longDescription:
+      "Ayodhya on the banks of the Sarayu is one of Hinduism's seven sacred cities. New temples, ghats, and evening aartis draw millions of pilgrims seeking Rama's blessings.",
+    duration: "2-3 days",
+    bestTime: "October – March",
+    experiences: ["Ram Janmabhoomi", "Sarayu aarti", "Temple circuit"],
+    gallery: [UNSPLASH("photo-1593696140821-1ffadde1bc97")],
+    tripPlan: defaultTripPlan("Ayodhya", [
+      "Ram Janmabhoomi darshan",
+      "Sarayu ghat evening aarti",
+      "Hanuman Garhi visit",
+      "Heritage lane walk",
+    ]),
+  },
+  {
+    id: "chitrakoot",
+    state: "Uttar Pradesh",
+    description:
+      "Where Rama spent exile — forests, rivers, and Ramayana sites.",
+    longDescription:
+      "Chitrakoot's Mandakini river, forested hills, and mythological sites from the Ramayana offer a peaceful pilgrimage far from urban bustle.",
+    duration: "2-3 days",
+    bestTime: "October – March",
+    experiences: ["Ramghat", "Ramayana sites", "Forest trails"],
+    gallery: [UNSPLASH("photo-1599558267722-90a3f8e2fdc5")],
+    tripPlan: defaultTripPlan("Chitrakoot", [
+      "Ramghat morning aarti",
+      "Kamadgiri parikrama",
+      "Gupt Godavari caves",
+      "Forest nature walk",
+    ]),
+  },
+  {
+    id: "mathura",
+    state: "Uttar Pradesh",
+    description: "Birthplace of Lord Krishna — colors, temples, and devotion.",
+    longDescription:
+      "Mathura bursts with color during Holi and Janmashtami. Ancient ghats on the Yamuna, Krishna temples, and the energy of bhajan-filled streets create pure joy.",
+    duration: "2-3 days",
+    bestTime: "October – March; Holi (Feb/Mar)",
+    experiences: ["Janmabhoomi", "Yamuna ghats", "Holi celebrations"],
+    gallery: [UNSPLASH("photo-1582719478250-c89cae4dc85b")],
+    tripPlan: defaultTripPlan("Mathura", [
+      "Krishna Janmabhoomi darshan",
+      "Yamuna ghat visit",
+      "Vishram Ghat evening aarti",
+      "Local peda tasting",
+    ]),
+  },
+  {
+    id: "vrindavan",
+    state: "Uttar Pradesh",
+    description: "Krishna's playground — temples, kirtans, and sacred groves.",
+    longDescription:
+      "Vrindavan's thousands of temples, Banke Bihari darshan queues, and ISKCON's grandeur make it the heart of Krishna bhakti. Flower-laden streets and constant kirtan create an atmosphere unlike anywhere on Earth.",
+    duration: "2-3 days",
+    bestTime: "October – March",
+    experiences: ["Banke Bihari", "ISKCON", "Kirtans"],
+    gallery: [UNSPLASH("photo-1582719478250-c89cae4dc85b")],
+    tripPlan: defaultTripPlan("Vrindavan", [
+      "Banke Bihari Temple darshan",
+      "ISKCON temple visit",
+      "Prem Mandir light show",
+      "Evening kirtan session",
+    ]),
+  },
+  {
+    id: "shimla",
+    state: "Himachal Pradesh",
+    description: "Colonial hill station with Mall Road charm and snowy vistas.",
+    longDescription:
+      "Shimla's Ridge, Christ Church, and toy train evoke British Raj nostalgia. Snow in winter and pleasant summers make it a year-round escape.",
+    duration: "3-4 days",
+    bestTime: "March – June; December – February (snow)",
+    experiences: ["Mall Road", "Toy train", "Snow views"],
+    gallery: [UNSPLASH("photo-1603264046856-95c9a827bcff")],
+    tripPlan: defaultTripPlan("Shimla", [
+      "The Ridge and Mall Road",
+      "Jakhu Temple trek",
+      "Toy train ride (Kalka-Shimla)",
+      "Kufri snow activities",
+    ]),
+  },
+  {
+    id: "kullu-manali",
+    state: "Himachal Pradesh",
+    description: "Himalayan adventure hub — rivers, peaks, and paragliding.",
+    longDescription:
+      "Kullu-Manali combines apple orchards, Beas river adventures, and snow-capped peaks. Paragliding, trekking, and cozy cafes with mountain views attract travelers year-round.",
+    duration: "4-6 days",
+    bestTime: "March – June; December – February",
+    experiences: ["Paragliding", "Rafting", "Solang Valley"],
+    gallery: [UNSPLASH("photo-1512453979798-5ea266f8880c")],
+    tripPlan: defaultTripPlan("Kullu-Manali", [
+      "Solang Valley adventure sports",
+      "Rohtang Pass excursion",
+      "Old Manali cafe crawl",
+      "Beas river rafting",
+      "Hadimba Temple visit",
+    ]),
+  },
+  {
+    id: "bangalore",
+    state: "Karnataka",
+    description: "Garden City gateway to South India's hill stations.",
+    longDescription:
+      "Bangalore (Bengaluru) balances tech-hub energy with lush gardens, craft breweries, and access to Coorg, Mysore, and the Western Ghats.",
+    duration: "2-3 days",
+    bestTime: "October – February",
+    experiences: ["Lalbagh gardens", "Cafes", "Day trips"],
+    gallery: [UNSPLASH("photo-1548013146-72479768bada")],
+    tripPlan: defaultTripPlan("Bangalore", [
+      "Lalbagh Botanical Garden",
+      "Cubbon Park morning walk",
+      "Local craft brewery tour",
+      "KR Market spice walk",
+    ]),
+  },
+  {
+    id: "mysore",
+    state: "Karnataka",
+    description: "City of palaces — illuminated grandeur and sandalwood.",
+    longDescription:
+      "Mysore Palace lit up on Sunday nights is one of India's most magical sights. Chamundi Hills, silk markets, and yoga traditions complete the experience.",
+    duration: "2-3 days",
+    bestTime: "October – March; Dasara (Sep/Oct)",
+    experiences: ["Mysore Palace", "Chamundi Hills", "Silk markets"],
+    gallery: [UNSPLASH("photo-1593696140821-1ffadde1bc97")],
+    tripPlan: defaultTripPlan("Mysore", [
+      "Mysore Palace tour",
+      "Sunday night illumination",
+      "Chamundi Hills climb",
+      "Devaraja Market silk shopping",
+    ]),
+  },
+  {
+    id: "ooty",
+    state: "Tamil Nadu",
+    description: "Nilgiri hill station — tea gardens and misty lakes.",
+    longDescription:
+      "Ooty's tea estates, Nilgiri Mountain Railway, and Ooty Lake create a classic colonial hill retreat in the Western Ghats.",
+    duration: "3-4 days",
+    bestTime: "March – June",
+    experiences: ["Tea gardens", "Toy train", "Boat rides"],
+    gallery: [UNSPLASH("photo-1512453979798-5ea266f8880c")],
+    tripPlan: defaultTripPlan("Ooty", [
+      "Nilgiri Mountain Railway",
+      "Tea estate tour and tasting",
+      "Ooty Lake boat ride",
+      "Doddabetta Peak viewpoint",
+    ]),
+  },
+  {
+    id: "kodaikanal",
+    state: "Tamil Nadu",
+    description:
+      "Princess of Hill Stations — lakes, pine forests, and cool air.",
+    longDescription:
+      "Kodaikanal's star-shaped lake, Coaker's Walk, and pine-scented trails offer a quieter alternative to Ooty with equally stunning Nilgiri views.",
+    duration: "3-4 days",
+    bestTime: "April – June; September – November",
+    experiences: ["Kodaikanal Lake", "Pine forests", "Waterfalls"],
+    gallery: [UNSPLASH("photo-1521292270410-a8c53642e9d0")],
+    tripPlan: defaultTripPlan("Kodaikanal", [
+      "Kodaikanal Lake cycling",
+      "Coaker's Walk sunrise",
+      "Pillar Rocks viewpoint",
+      "Bryant Park botanical tour",
+    ]),
+  },
+  {
+    id: "jodhpur",
+    state: "Rajasthan",
+    description: "The Blue City — Mehrangarh Fort and desert-edge culture.",
+    longDescription:
+      "Jodhpur's blue-painted old city climbs toward the imposing Mehrangarh Fort. Stepwells, spice markets, and desert excursions define this royal destination.",
+    duration: "2-3 days",
+    bestTime: "October – March",
+    experiences: ["Mehrangarh Fort", "Blue City walk", "Desert camps"],
+    gallery: [UNSPLASH("photo-1512453979798-5ea266f8880c")],
+    tripPlan: defaultTripPlan("Jodhpur", [
+      "Mehrangarh Fort audio tour",
+      "Blue City heritage walk",
+      "Toorji Ka Jhalra stepwell",
+      "Desert camp dinner",
+    ]),
+  },
+  {
+    id: "mt-abu",
+    state: "Rajasthan",
+    description: "Rajasthan's only hill station — lakes and Jain temples.",
+    longDescription:
+      "Mount Abu offers cool respite in the desert state. Nakki Lake, Dilwara Jain temples with marble carvings, and sunset points draw couples and pilgrims alike.",
+    duration: "2-3 days",
+    bestTime: "March – June; September – November",
+    experiences: ["Nakki Lake", "Dilwara temples", "Sunset Point"],
+    gallery: [UNSPLASH("photo-1516300523007-3b26d3814a00")],
+    tripPlan: defaultTripPlan("Mount Abu", [
+      "Dilwara Jain Temple tour",
+      "Nakki Lake boat ride",
+      "Sunset Point visit",
+      "Guru Shikhar peak trek",
+    ]),
+  },
+  {
+    id: "khajuraho",
+    state: "Madhya Pradesh",
+    description: "UNESCO temples with exquisite stone carvings.",
+    longDescription:
+      "Khajuraho's temple complexes showcase India's finest medieval sculpture. The sound and light show brings centuries of history to life under the stars.",
+    duration: "2-3 days",
+    bestTime: "October – March",
+    experiences: ["Temple art", "Sound & light show", "Panna Tiger Reserve"],
+    gallery: [UNSPLASH("photo-1516300523007-3b26d3814a00")],
+    tripPlan: defaultTripPlan("Khajuraho", [
+      "Western Group temples tour",
+      "Sound and light show",
+      "Eastern Group temples",
+      "Local dance performance",
+    ]),
+  },
+  {
+    id: "jabalpur",
+    state: "Madhya Pradesh",
+    description: "Marble Rocks and Dhuandhar Falls on the Narmada.",
+    longDescription:
+      "Jabalpur's Bhedaghat gorge features white marble cliffs reflected in emerald Narmada waters. Boat rides through the canyon are unforgettable.",
+    duration: "2-3 days",
+    bestTime: "October – March",
+    experiences: ["Marble Rocks", "Dhuandhar Falls", "Boat rides"],
+    gallery: [UNSPLASH("photo-1549887534-3db1bd59dcca")],
+    tripPlan: defaultTripPlan("Jabalpur", [
+      "Bhedaghat Marble Rocks boat ride",
+      "Dhuandhar Falls visit",
+      "Narmada aarti",
+      "Madala art village",
+    ]),
+  },
+  {
+    id: "pachmarhi",
+    state: "Madhya Pradesh",
+    description: "Satpura hill retreat — forests, waterfalls, and caves.",
+    longDescription:
+      "Pachmarhi, Madhya Pradesh's only hill station, hides waterfalls, ancient caves, and dense Satpura forests perfect for nature lovers.",
+    duration: "3-4 days",
+    bestTime: "October – June",
+    experiences: ["Waterfalls", "Caves", "Forest treks"],
+    gallery: [UNSPLASH("photo-1517824806704-9040b037703b")],
+    tripPlan: defaultTripPlan("Pachmarhi", [
+      "Bee Falls trek",
+      "Jata Shankar cave",
+      "Dhoopgarh sunset peak",
+      "Satpura forest safari",
+    ]),
+  },
+  {
+    id: "jog-falls",
+    state: "Karnataka",
+    description: "One of India's highest waterfalls — monsoon spectacle.",
+    longDescription:
+      "Jog Falls plunges 830 feet in four distinct cascades. During monsoon the roar and mist create one of nature's most dramatic shows in South India.",
+    duration: "1-2 days",
+    bestTime: "July – October (monsoon peak)",
+    experiences: ["Waterfall views", "Monsoon treks", "Western Ghats"],
+    gallery: [UNSPLASH("photo-1516300523007-3b26d3814a00")],
+    tripPlan: defaultTripPlan("Jog Falls", [
+      "Main viewpoint sunrise",
+      "Govt seat viewpoint trek",
+      "Linganamakki Dam visit",
+      "Local Malnad cuisine",
+    ]),
+  },
+  {
+    id: "fossil-park",
+    state: "Gujarat",
+    description: "Ancient fossil beds and unique geological formations.",
+    longDescription:
+      "India's fossil parks preserve prehistoric life in stone. Educational trails and unique rock formations make this a fascinating offbeat destination.",
+    duration: "1-2 days",
+    bestTime: "October – March",
+    experiences: ["Fossil trails", "Geology", "Offbeat travel"],
+    gallery: [UNSPLASH("photo-1516300523007-3b26d3814a00")],
+    tripPlan: defaultTripPlan("Fossil Park", [
+      "Guided fossil trail",
+      "Interpretation center visit",
+      "Geological formation walk",
+    ]),
+  },
+  {
+    id: "murudeshwar-beach",
+    state: "Karnataka",
+    description: "Giant Shiva statue meets Arabian Sea beaches.",
+    longDescription:
+      "Murudeshwar's 123-foot Shiva statue towers over the temple and beach. Coastal walks, boat rides, and sunset views combine spirituality with seaside relaxation.",
+    duration: "2-3 days",
+    bestTime: "October – March",
+    experiences: ["Shiva statue", "Beach walks", "Coastal temples"],
+    gallery: [UNSPLASH("photo-1507525428034-b723cf961d3e")],
+    tripPlan: defaultTripPlan("Murudeshwar", [
+      "Murudeshwar Temple darshan",
+      "Shiva statue viewpoint",
+      "Beach sunset walk",
+      "Netrani Island boat trip",
+    ]),
+  },
+];
+
+export const destinations: Destination[] = seeds.map(buildDestination);
+
 export function getDestinationById(id: string): Destination | undefined {
-  return destinations.find(dest => dest.id === id);
+  return destinations.find((dest) => dest.id === id);
 }
 
+export function getDestinationsByLabel(label: LocationLabel): Destination[] {
+  return destinations.filter((dest) => dest.labels?.includes(label));
+}

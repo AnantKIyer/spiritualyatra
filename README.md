@@ -48,23 +48,26 @@ spiritualyatra/
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm, yarn, pnpm, or bun
 
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone <repository-url>
 cd spiritualyatra
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Run the development server:
+
 ```bash
 npm run dev
 ```
@@ -98,14 +101,42 @@ The website references images in the `public/images/` directory. You'll need to 
 
 You can use placeholder images or actual destination photos. Recommended size: 800x600px or similar aspect ratio.
 
-## Future Phases (Backend Integration)
+## Convex Database
 
-This project is structured to easily add backend functionality in future phases:
+Content is stored in [Convex](https://convex.dev) (`destinations`, `packages`, `testimonials`, `contactInquiries`).
 
-1. **Data Layer:** The `lib/data/` directory can be replaced with API calls
-2. **Type Definitions:** Types in `types/index.ts` are designed to match backend models
-3. **Form Handling:** React Hook Form is ready for API submission
-4. **Environment Variables:** Can be added for API endpoints
+```bash
+npm run convex:dev   # sync Convex functions locally
+npm run seed         # import seed data from lib/data/
+```
+
+Set `NEXT_PUBLIC_CONVEX_URL` in `.env.local` (see `.env.local.example`). **Do not include a trailing slash** — `https://fine-ant-169.convex.cloud` not `...cloud/`.
+
+Bootstrap the default admin user in Convex (only needed once per deployment):
+
+```bash
+npm run seed
+# or: npx convex run adminAuth:ensureDefaultAdmin
+```
+
+If login fails with the default credentials, reset the admin password:
+
+```bash
+npx convex run adminAuth:resetDefaultAdminPassword '{"repairKey":"spiritual-yatra-seed"}'
+```
+
+## Admin Dashboard
+
+Protected admin area at `/admin` (linked from the footer).
+
+Admin users are stored in Convex (`adminUsers`, `adminSessions`). Default credentials after seeding:
+
+- Username: `admin-user`
+- Password: `password`
+
+Change the password after first login in production. No admin credentials are required in Vercel env vars — only `NEXT_PUBLIC_CONVEX_URL`.
+
+Features: manage destinations, packages, testimonials, and contact inquiries; upload images via Convex File Storage.
 
 ## Development
 
@@ -115,14 +146,10 @@ This project is structured to easily add backend functionality in future phases:
 
 ## Deployment
 
-This static site can be deployed to:
+This app uses Next.js with Convex. Deploy to **Vercel** (recommended) with:
 
-- **Vercel** (recommended for Next.js)
-- **Netlify**
-- **GitHub Pages**
-- **Any static hosting service**
-
-Simply run `npm run build` and deploy the `out` directory.
+- `NEXT_PUBLIC_CONVEX_URL`
+- Run `npm run convex:deploy` and `npx convex run adminAuth:ensureDefaultAdmin` for production Convex
 
 ## License
 

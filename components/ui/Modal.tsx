@@ -1,10 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
-import { cn } from "@/lib/utils";
-
-// Module-level counter to track how many modals are open
-let openModalCount = 0;
+import React, { useEffect } from "react";
 
 interface ModalProps {
   isOpen: boolean;
@@ -19,36 +15,14 @@ export default function Modal({
   title,
   children,
 }: ModalProps) {
-  const isRegisteredRef = useRef(false);
-
   useEffect(() => {
-    if (isOpen && !isRegisteredRef.current) {
-      // Increment counter when this modal opens (only if not already registered)
-      openModalCount++;
-      isRegisteredRef.current = true;
-      document.body.style.overflow = "hidden";
-    } else if (!isOpen && isRegisteredRef.current) {
-      // Decrement counter when this modal closes (only if it was registered)
-      openModalCount--;
-      isRegisteredRef.current = false;
+    if (!isOpen) return;
 
-      // Only reset overflow if no modals are open
-      if (openModalCount === 0) {
-        document.body.style.overflow = "unset";
-      }
-    }
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
 
     return () => {
-      // Cleanup: decrement counter if this modal was registered
-      if (isRegisteredRef.current) {
-        openModalCount--;
-        isRegisteredRef.current = false;
-
-        // Only reset overflow if no modals are open
-        if (openModalCount === 0) {
-          document.body.style.overflow = "unset";
-        }
-      }
+      document.body.style.overflow = previousOverflow;
     };
   }, [isOpen]);
 
@@ -59,15 +33,12 @@ export default function Modal({
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       onClick={onClose}
     >
-      {/* Backdrop */}
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
 
-      {/* Modal Content */}
       <div
         className="relative bg-white rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col material-elevation-4"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-primary-200">
           <h2 className="text-2xl font-semibold text-airbnb-black">{title}</h2>
           <button
@@ -91,7 +62,6 @@ export default function Modal({
           </button>
         </div>
 
-        {/* Body */}
         <div className="p-6 overflow-y-auto flex-1">{children}</div>
       </div>
     </div>

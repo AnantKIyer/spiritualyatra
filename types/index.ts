@@ -9,21 +9,21 @@ export interface Destination {
   id: string;
   name: string;
   description: string;
+  longDescription: string;
   image: string;
+  gallery: string[];
   location: string;
   highlights: string[];
   labels?: LocationLabel[];
   basePrice?: number;
   duration?: string;
+  bestTime?: string;
+  experiences?: string[];
   tripPlan: TripPlanDay[];
 }
 
 export type LocationLabel =
-  | 'spiritual'
-  | 'romantic'
-  | 'historic'
-  | 'excursion'
-  | 'adventure';
+  "spiritual" | "romantic" | "historic" | "excursion" | "adventure";
 
 export interface Location {
   id: string;
@@ -34,16 +34,28 @@ export interface Location {
   basePrice: number;
 }
 
+export interface PackageItineraryDay {
+  day: string;
+  title: string;
+  location: string;
+  description: string;
+  activities: string[];
+}
+
 export interface Package {
   id: string;
   name: string;
   description: string;
   image: string;
   destinations: string[];
+  destinationIds: string[];
   duration: string;
   price: number;
   highlights: string[];
-  itinerary?: string[];
+  itinerary: PackageItineraryDay[];
+  inclusions?: string[];
+  boosted?: boolean;
+  boostedAt?: number;
 }
 
 export interface Testimonial {
@@ -53,6 +65,7 @@ export interface Testimonial {
   content: string;
   rating: number;
   image?: string;
+  avatar?: string;
 }
 
 export interface ContactFormData {
@@ -62,4 +75,3 @@ export interface ContactFormData {
   message: string;
   package?: string;
 }
-

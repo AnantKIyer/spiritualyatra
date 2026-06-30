@@ -1,0 +1,373 @@
+"use server";
+
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { fetchMutation, fetchQuery } from "@/lib/convex/server";
+import { api } from "@/convex/_generated/api";
+import type { Id } from "@/convex/_generated/dataModel";
+import { requireSessionToken, requireAdminSession } from "@/lib/admin/auth";
+import { SESSION_COOKIE } from "@/lib/admin/session";
+import { getErrorMessage } from "@/lib/errors";
+
+export type ActionResult = { success: true } | { success: false; error: string };
+
+export type DestinationFormData = {
+  slug: string;
+  name: string;
+  description: string;
+  longDescription: string;
+  image: string;
+  gallery: string[];
+  location: string;
+  highlights: string[];
+  labels?: Array<
+    "spiritual" | "romantic" | "historic" | "excursion" | "adventure"
+  >;
+  basePrice?: number;
+  duration?: string;
+  bestTime?: string;
+  experiences?: string[];
+  tripPlan: Array<{
+    day: string;
+    title: string;
+    description: string;
+    activities: string[];
+  }>;
+};
+
+export type PackageFormData = {
+  slug: string;
+  name: string;
+  description: string;
+  image: string;
+  destinations: string[];
+  destinationIds: string[];
+  duration: string;
+  price: number;
+  highlights: string[];
+  itinerary: Array<{
+    day: string;
+    title: string;
+    location: string;
+    description: string;
+    activities: string[];
+  }>;
+  inclusions?: string[];
+};
+
+export type TestimonialFormData = {
+  slug: string;
+  name: string;
+  location: string;
+  content: string;
+  rating: number;
+  image?: string;
+  avatar?: string;
+};
+
+export async function establishSessionAction(
+  token: string,
+): Promise<ActionResult> {
+  if (!token.trim()) {
+    return { success: false, error: "Invalid session token" };
+  }
+
+  try {
+    const cookieStore = await cookies();
+    cookieStore.set(SESSION_COOKIE, token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 8,
+    });
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      error: getErrorMessage(error, "Could not save your session. Try again."),
+    };
+  }
+}
+
+export async function changePasswordAction(
+  _prevState: ActionResult | null,
+  formData: FormData,
+): Promise<ActionResult> {
+  await requireAdminSession();
+
+  const currentPassword = formData.get("currentPassword")?.toString() ?? "";
+  const newPassword = formData.get("newPassword")?.toString() ?? "";
+  const confirmPassword = formData.get("confirmPassword")?.toString() ?? "";
+
+  if (!currentPassword || !newPassword || !confirmPassword) {
+    return { success: false, error: "All password fields are required" };
+  }
+
+  if (newPassword !== confirmPassword) {
+    return { success: false, error: "New passwords do not match" };
+  }
+
+  if (newPassword.length < 8) {
+    return {
+      success: false,
+      error: "New password must be at least 8 characters",
+    };
+  }
+
+  try {
+    await fetchMutation(api.adminAuth.changePassword, {
+      sessionToken: await requireSessionToken(),
+      currentPassword,
+      newPassword,
+    });
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      error: getErrorMessage(error, "Failed to change password"),
+    };
+  }
+}
+
+export async function logoutAction(): Promise<void> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(SESSION_COOKIE)?.value;
+
+  if (token) {
+    try {
+      await fetchMutation(api.adminAuth.logout, { sessionToken: token });
+    } catch {
+      // Clear the cookie even if Convex logout fails.
+    }
+  }
+
+  cookieStore.delete(SESSION_COOKIE);
+  redirect("/admin/login");
+}
+
+export async function getUploadUrlAction(): Promise<{ uploadUrl: string }> {
+  await requireAdminSession();
+  const uploadUrl = await fetchMutation(api.files.generateUploadUrl, {
+    sessionToken: await requireSessionToken(),
+  });
+  return { uploadUrl };
+}
+
+export async function resolveStorageUrlAction(
+  storageId: string,
+): Promise<{ url: string | null }> {
+  await requireAdminSession();
+  const url = await fetchQuery(api.files.getUrl, {
+    storageId: storageId as import("@/convex/_generated/dataModel").Id<"_storage">,
+  });
+  return { url };
+}
+
+export async function createDestinationAction(
+  data: DestinationFormData,
+): Promise<ActionResult> {
+  await requireAdminSession();
+  try {
+    await fetchMutation(api.adminDestinations.create, {
+      sessionToken: await requireSessionToken(),
+      data,
+    });
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to create",
+    };
+  }
+}
+
+export async function updateDestinationAction(
+  id: Id<"destinations">,
+  data: DestinationFormData,
+): Promise<ActionResult> {
+  await requireAdminSession();
+  try {
+    await fetchMutation(api.adminDestinations.update, {
+      sessionToken: await requireSessionToken(),
+      id,
+      data,
+    });
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to update",
+    };
+  }
+}
+
+export async function deleteDestinationAction(
+  id: Id<"destinations">,
+): Promise<ActionResult> {
+  await requireAdminSession();
+  try {
+    await fetchMutation(api.adminDestinations.remove, {
+      sessionToken: await requireSessionToken(),
+      id,
+    });
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to delete",
+    };
+  }
+}
+
+export async function createPackageAction(
+  data: PackageFormData,
+): Promise<ActionResult> {
+  await requireAdminSession();
+  try {
+    await fetchMutation(api.adminPackages.create, {
+      sessionToken: await requireSessionToken(),
+      data,
+    });
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to create",
+    };
+  }
+}
+
+export async function updatePackageAction(
+  id: Id<"packages">,
+  data: PackageFormData,
+): Promise<ActionResult> {
+  await requireAdminSession();
+  try {
+    await fetchMutation(api.adminPackages.update, {
+      sessionToken: await requireSessionToken(),
+      id,
+      data,
+    });
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to update",
+    };
+  }
+}
+
+export async function deletePackageAction(
+  id: Id<"packages">,
+): Promise<ActionResult> {
+  await requireAdminSession();
+  try {
+    await fetchMutation(api.adminPackages.remove, {
+      sessionToken: await requireSessionToken(),
+      id,
+    });
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to delete",
+    };
+  }
+}
+
+export async function createTestimonialAction(
+  data: TestimonialFormData,
+): Promise<ActionResult> {
+  await requireAdminSession();
+  try {
+    await fetchMutation(api.adminTestimonials.create, {
+      sessionToken: await requireSessionToken(),
+      data,
+    });
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to create",
+    };
+  }
+}
+
+export async function updateTestimonialAction(
+  id: Id<"testimonials">,
+  data: TestimonialFormData,
+): Promise<ActionResult> {
+  await requireAdminSession();
+  try {
+    await fetchMutation(api.adminTestimonials.update, {
+      sessionToken: await requireSessionToken(),
+      id,
+      data,
+    });
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to update",
+    };
+  }
+}
+
+export async function deleteTestimonialAction(
+  id: Id<"testimonials">,
+): Promise<ActionResult> {
+  await requireAdminSession();
+  try {
+    await fetchMutation(api.adminTestimonials.remove, {
+      sessionToken: await requireSessionToken(),
+      id,
+    });
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to delete",
+    };
+  }
+}
+
+export async function updateInquiryStatusAction(
+  id: Id<"contactInquiries">,
+  status: "new" | "contacted" | "closed",
+): Promise<ActionResult> {
+  await requireAdminSession();
+  try {
+    await fetchMutation(api.contactInquiries.updateStatus, {
+      sessionToken: await requireSessionToken(),
+      id,
+      status,
+    });
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to update",
+    };
+  }
+}
+
+export async function setPackageBoostAction(
+  id: Id<"packages">,
+  boosted: boolean,
+): Promise<ActionResult> {
+  await requireAdminSession();
+  try {
+    await fetchMutation(api.adminPackages.setBoost, {
+      sessionToken: await requireSessionToken(),
+      id,
+      boosted,
+    });
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to update boost",
+    };
+  }
+}

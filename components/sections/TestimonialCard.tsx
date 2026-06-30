@@ -2,95 +2,46 @@
 
 import { Testimonial } from "@/types";
 import { StarIcon, QuoteIcon } from "@/components/ui/Icons";
-import Button from "@/components/ui/Button";
-import { useEffect, useRef } from "react";
+import Reveal from "@/components/ui/motion/Reveal";
 
 interface TestimonialCardProps {
   testimonial: Testimonial;
 }
 
 export default function TestimonialCard({ testimonial }: TestimonialCardProps) {
-  const cardRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    // Random interactive: subtle tilt on hover
-    const card = cardRef.current;
-    if (!card) return;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
-      const rotateX = (y - centerY) / 20;
-      const rotateY = (centerX - x) / 20;
-
-      card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-    };
-
-    const handleMouseLeave = () => {
-      if (card) {
-        card.style.transform = "perspective(1000px) rotateX(0) rotateY(0)";
-      }
-    };
-
-    card.addEventListener("mousemove", handleMouseMove);
-    card.addEventListener("mouseleave", handleMouseLeave);
-
-    return () => {
-      card.removeEventListener("mousemove", handleMouseMove);
-      card.removeEventListener("mouseleave", handleMouseLeave);
-    };
-  }, []);
-
   return (
-    <div
-      ref={cardRef}
-      className="bg-white rounded-lg border border-primary-200 material-elevation-2 hover:material-elevation-3 transition-all duration-200 flex flex-col overflow-hidden"
-      style={{ minHeight: "500px" }}
-    >
-      {/* Image/Icon Section - Uniform height */}
-      <div className="relative h-48 w-full bg-primary-50 flex items-center justify-center">
-        <QuoteIcon className="w-16 h-16 text-primary-300" />
-      </div>
+    <Reveal>
+      <article className="bg-white rounded-2xl border border-ink-200 shadow-md hover:shadow-indian-lg transition-shadow duration-300 flex flex-col overflow-hidden min-h-[420px] w-[340px] flex-shrink-0">
+        <div className="p-6 flex flex-col flex-grow">
+          <QuoteIcon className="w-8 h-8 text-saffron-200 mb-4" />
 
-      {/* Content Section - Uniform padding */}
-      <div className="p-6 flex flex-col flex-grow">
-        {/* Rating */}
-        <div className="flex items-center gap-1 mb-4">
-          {[...Array(testimonial.rating)].map((_, i) => (
-            <StarIcon
-              key={i}
-              className="w-4 h-4 text-secondary-500"
-              filled={true}
-            />
-          ))}
-        </div>
+          <div className="flex items-center gap-1 mb-4">
+            {[...Array(testimonial.rating)].map((_, i) => (
+              <StarIcon
+                key={`star-${i}`}
+                className="w-4 h-4 text-marigold-500"
+                filled={true}
+              />
+            ))}
+          </div>
 
-        {/* Divider */}
-        <div className="h-px bg-primary-200 mb-4"></div>
-
-        {/* Content */}
-        <p className="text-airbnb-black mb-6 text-sm leading-relaxed line-clamp-4">
-          "{testimonial.content}"
-        </p>
-
-        {/* Author Info */}
-        <div className="mb-6">
-          <p className="font-medium text-airbnb-black mb-1">
-            {testimonial.name}
+          <p className="text-ink-700 text-sm leading-relaxed line-clamp-5 flex-grow mb-6">
+            &ldquo;{testimonial.content}&rdquo;
           </p>
-          <p className="text-sm text-primary-600">{testimonial.location}</p>
-        </div>
 
-        {/* Button - Always at bottom */}
-        <div className="mt-auto">
-          <Button variant="outline" size="sm" className="w-full">
-            Read more
-          </Button>
+          <div className="flex items-center gap-3 pt-4 border-t border-ink-100">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-saffron-400 to-maroon-500 flex items-center justify-center text-white text-sm font-bold">
+              {testimonial.avatar ?? testimonial.name.charAt(0)}
+            </div>
+            <div>
+              <p className="font-semibold text-ink-900 text-sm">
+                {testimonial.name}
+              </p>
+              <p className="text-ink-500 text-xs">{testimonial.location}</p>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </article>
+    </Reveal>
   );
 }

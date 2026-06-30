@@ -2,7 +2,7 @@ import React from "react";
 import { cn } from "@/lib/utils";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "outline";
+  variant?: "primary" | "outline" | "outline-light";
   size?: "sm" | "md" | "lg";
   children: React.ReactNode;
 }
@@ -15,13 +15,15 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const baseStyles =
-    "font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2";
+    "font-semibold rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 inline-flex items-center justify-center";
 
   const variantStyles = {
     primary:
-      "bg-accent-500 hover:bg-accent-600 text-white focus:ring-accent-500",
+      "bg-saffron-500 hover:bg-saffron-600 text-white focus:ring-saffron-500 shadow-md hover:shadow-indian-lg",
     outline:
-      "border-2 border-primary-300 hover:border-accent-500 text-airbnb-black hover:text-accent-500 bg-white hover:bg-accent-50 focus:ring-accent-500",
+      "border-2 border-ink-300 hover:border-saffron-500 text-ink-800 hover:text-saffron-600 bg-white hover:bg-saffron-50 focus:ring-saffron-500",
+    "outline-light":
+      "border-2 border-white/40 text-white bg-white/10 hover:bg-white/20 hover:border-white/60 focus:ring-white/50",
   };
 
   const sizeStyles = {
@@ -36,7 +38,7 @@ export default function Button({
         baseStyles,
         variantStyles[variant],
         sizeStyles[size],
-        className
+        className,
       )}
       {...props}
     >

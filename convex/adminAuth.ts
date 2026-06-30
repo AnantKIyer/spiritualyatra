@@ -1,0 +1,174 @@
+import { mutation, query } from "./_generated/server";
+import { v } from "convex/values";
+import {
+  assertAdminSession,
+  createSessionExpiry,
+  createSessionToken,
+  getAdminUserForSession,
+} from "./lib/adminAuth";
+import { hashPassword, verifyPassword } from "./lib/password";
+
+export const login = mutation({
+  args: {
+    username: v.string(),
+    password: v.string(),
+  },
+  handler: async (ctx, { username, password }) => {
+    const user = await ctx.db
+      .query("adminUsers")
+      .withIndex("by_username", (q) => q.eq("username", username))
+      .unique();
+
+    if (!user || !user.active) {
+      throw new Error("Invalid username or password");
+    }
+
+    const valid = await verifyPassword(password, user.passwordHash);
+    if (!valid) {
+      throw new Error("Invalid username or password");
+    }
+
+    const token = createSessionToken();
+    await ctx.db.insert("adminSessions", {
+      token,
+      userId: user._id,
+      expiresAt: createSessionExpiry(),
+    });
+
+    return {
+      token,
+      username: user.username,
+      displayName: user.displayName ?? user.username,
+    };
+  },
+});
+
+export const logout = mutation({
+  args: { sessionToken: v.string() },
+  handler: async (ctx, { sessionToken }) => {
+    const session = await ctx.db
+      .query("adminSessions")
+      .withIndex("by_token", (q) => q.eq("token", sessionToken))
+      .unique();
+
+    if (session) {
+      await ctx.db.delete(session._id);
+    }
+  },
+});
+
+export const validateSession = query({
+  args: { sessionToken: v.string() },
+  handler: async (ctx, { sessionToken }) => {
+    const user = await getAdminUserForSession(ctx, sessionToken);
+    if (!user) {
+      return null;
+    }
+
+    return {
+      userId: user._id,
+      username: user.username,
+      displayName: user.displayName ?? user.username,
+      role: user.role,
+    };
+  },
+});
+
+export const ensureDefaultAdmin = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const existing = await ctx.db
+      .query("adminUsers")
+      .withIndex("by_username", (q) => q.eq("username", "admin-user"))
+      .unique();
+
+    if (existing) {
+      return { created: false, username: existing.username };
+    }
+
+    await ctx.db.insert("adminUsers", {
+      username: "admin-user",
+      passwordHash: await hashPassword("password"),
+      displayName: "Admin",
+      role: "admin",
+      active: true,
+    });
+
+    return { created: true, username: "admin-user" };
+  },
+});
+
+export const resetDefaultAdminPassword = mutation({
+  args: { repairKey: v.string() },
+  handler: async (ctx, { repairKey }) => {
+    const expectedKey = process.env.SEED_ADMIN_KEY ?? "spiritual-yatra-seed";
+    if (repairKey !== expectedKey) {
+      throw new Error("Invalid repair key");
+    }
+
+    const user = await ctx.db
+      .query("adminUsers")
+      .withIndex("by_username", (q) => q.eq("username", "admin-user"))
+      .unique();
+
+    if (!user) {
+      await ctx.db.insert("adminUsers", {
+        username: "admin-user",
+        passwordHash: await hashPassword("password"),
+        displayName: "Admin",
+        role: "admin",
+        active: true,
+      });
+      return { reset: true, username: "admin-user", created: true };
+    }
+
+    await ctx.db.patch(user._id, {
+      passwordHash: await hashPassword("password"),
+      active: true,
+    });
+
+    const sessions = await ctx.db
+      .query("adminSessions")
+      .filter((q) => q.eq(q.field("userId"), user._id))
+      .collect();
+    for (const session of sessions) {
+      await ctx.db.delete(session._id);
+    }
+
+    return { reset: true, username: "admin-user", created: false };
+  },
+});
+
+export const changePassword = mutation({
+  args: {
+    sessionToken: v.string(),
+    currentPassword: v.string(),
+    newPassword: v.string(),
+  },
+  handler: async (ctx, { sessionToken, currentPassword, newPassword }) => {
+    const user = await assertAdminSession(ctx, sessionToken);
+    const valid = await verifyPassword(currentPassword, user.passwordHash);
+    if (!valid) {
+      throw new Error("Current password is incorrect");
+    }
+
+    if (newPassword.length < 8) {
+      throw new Error("New password must be at least 8 characters");
+    }
+
+    await ctx.db.patch(user._id, {
+      passwordHash: await hashPassword(newPassword),
+    });
+
+    const sessions = await ctx.db
+      .query("adminSessions")
+      .filter((q) => q.eq(q.field("userId"), user._id))
+      .collect();
+
+    for (const session of sessions) {
+      if (session.token !== sessionToken) {
+        await ctx.db.delete(session._id);
+      }
+    }
+  },
+});

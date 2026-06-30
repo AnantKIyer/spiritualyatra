@@ -1,92 +1,185 @@
-import type { Config } from 'tailwindcss';
+import type { Config } from "tailwindcss";
 
 const config: Config = {
-    content: [
-        './pages/**/*.{js,ts,jsx,tsx,mdx}',
-        './components/**/*.{js,ts,jsx,tsx,mdx}',
-        './app/**/*.{js,ts,jsx,tsx,mdx}',
-    ],
-    theme: {
-        extend: {
-            colors: {
-                // Material Design 60-30-10 Color System
-                // 60% - Dominant (Neutral/White)
-                'primary': {
-                    '50': '#FAFAFA',   // Dominant background
-                    '100': '#F5F5F5',
-                    '200': '#EEEEEE',
-                    '300': '#E0E0E0',
-                    '400': '#BDBDBD',
-                    '500': '#9E9E9E',
-                    '600': '#757575',
-                    '700': '#616161',
-                    '800': '#424242',
-                    '900': '#212121',
-                },
-                // 30% - Secondary (Light Orange/Yellow)
-                'secondary': {
-                    '50': '#FFF8E1',
-                    '100': '#FFECB3',
-                    '200': '#FFE082',
-                    '300': '#FFD54F',
-                    '400': '#FFCA28',
-                    '500': '#FFC107',   // Secondary accent
-                    '600': '#FFB300',
-                    '700': '#FFA000',
-                },
-                // 10% - Accent (Orange)
-                'accent': {
-                    '50': '#FFF3E0',
-                    '100': '#FFE0B2',
-                    '200': '#FFCC80',
-                    '300': '#FFB74D',
-                    '400': '#FFA726',
-                    '500': '#FF9800',   // Accent color (Orange)
-                    '600': '#FB8C00',
-                    '700': '#F57C00',
-                },
-                // Red for buttons
-                'red': {
-                    '50': '#FEF2F2',
-                    '100': '#FEE2E2',
-                    '200': '#FECACA',
-                    '300': '#FCA5A5',
-                    '400': '#F87171',
-                    '500': '#EF4444',   // Primary red button color
-                    '600': '#DC2626',
-                    '700': '#B91C1C',
-                    '800': '#991B1B',
-                    '900': '#7F1D1D',
-                },
-                // Legacy support
-                'airbnb-red': '#FF9800',
-                'airbnb-red-hover': '#FB8C00',
-                'airbnb-black': '#212121',
-                'airbnb-gray': '#757575',
-                'airbnb-border': '#E0E0E0',
-                'airbnb-surface': '#FAFAFA',
-            },
-            boxShadow: {
-                'sm': '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-                'DEFAULT': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
-                'md': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-                'lg': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-                'xl': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-                '2xl': '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-                'elevation-1': '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
-                'elevation-2': '0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)',
-                'elevation-3': '0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23)',
-                'elevation-4': '0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22)',
-            },
-            fontFamily: {
-                sans: ['var(--font-geist-sans)', 'system-ui', 'sans-serif'],
-                mono: ['var(--font-geist-mono)', 'monospace'],
-                display: ['var(--font-geist-sans)', 'system-ui', 'sans-serif'],
-            },
+  content: [
+    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          "50": "#FAFAFA",
+          "100": "#F5F5F5",
+          "200": "#EEEEEE",
+          "300": "#E0E0E0",
+          "400": "#BDBDBD",
+          "500": "#9E9E9E",
+          "600": "#757575",
+          "700": "#616161",
+          "800": "#424242",
+          "900": "#212121",
         },
+        secondary: {
+          "50": "#FFF8E1",
+          "100": "#FFECB3",
+          "200": "#FFE082",
+          "300": "#FFD54F",
+          "400": "#FFCA28",
+          "500": "#FFC107",
+          "600": "#FFB300",
+          "700": "#FFA000",
+        },
+        accent: {
+          "50": "#FFF3E0",
+          "100": "#FFE0B2",
+          "200": "#FFCC80",
+          "300": "#FFB74D",
+          "400": "#FFA726",
+          "500": "#FF9800",
+          "600": "#FB8C00",
+          "700": "#F57C00",
+        },
+        saffron: {
+          "50": "#FFF7ED",
+          "100": "#FFEDD5",
+          "200": "#FED7AA",
+          "300": "#FDBA74",
+          "400": "#FB923C",
+          "500": "#F97316",
+          "600": "#EA580C",
+          "700": "#C2410C",
+          "800": "#9A3412",
+          "900": "#7C2D12",
+        },
+        marigold: {
+          "50": "#FFFBEB",
+          "100": "#FEF3C7",
+          "200": "#FDE68A",
+          "300": "#FCD34D",
+          "400": "#FBBF24",
+          "500": "#F59E0B",
+          "600": "#D97706",
+          "700": "#B45309",
+        },
+        maroon: {
+          "50": "#FDF2F8",
+          "100": "#FCE7F3",
+          "200": "#FBCFE8",
+          "300": "#F9A8D4",
+          "400": "#F472B6",
+          "500": "#BE123C",
+          "600": "#9F1239",
+          "700": "#881337",
+          "800": "#701A2E",
+          "900": "#4C0519",
+        },
+        gold: {
+          "50": "#FFFBEB",
+          "100": "#FEF3C7",
+          "200": "#FDE68A",
+          "300": "#FCD34D",
+          "400": "#D4AF37",
+          "500": "#C5A028",
+          "600": "#A67C00",
+        },
+        ink: {
+          "50": "#F8FAFC",
+          "100": "#F1F5F9",
+          "200": "#E2E8F0",
+          "300": "#CBD5E1",
+          "400": "#94A3B8",
+          "500": "#64748B",
+          "600": "#475569",
+          "700": "#334155",
+          "800": "#1E293B",
+          "900": "#0F172A",
+          "950": "#020617",
+        },
+        emerald: {
+          "50": "#ECFDF5",
+          "100": "#D1FAE5",
+          "200": "#A7F3D0",
+          "300": "#6EE7B7",
+          "400": "#34D399",
+          "500": "#10B981",
+          "600": "#059669",
+          "700": "#047857",
+        },
+        "royal-blue": {
+          "50": "#EFF6FF",
+          "100": "#DBEAFE",
+          "200": "#BFDBFE",
+          "300": "#93C5FD",
+          "400": "#60A5FA",
+          "500": "#3B82F6",
+          "600": "#2563EB",
+          "700": "#1D4ED8",
+        },
+        red: {
+          "50": "#FEF2F2",
+          "100": "#FEE2E2",
+          "200": "#FECACA",
+          "300": "#FCA5A5",
+          "400": "#F87171",
+          "500": "#EF4444",
+          "600": "#DC2626",
+          "700": "#B91C1C",
+          "800": "#991B1B",
+          "900": "#7F1D1D",
+        },
+        "airbnb-red": "#FF9800",
+        "airbnb-red-hover": "#FB8C00",
+        "airbnb-black": "#212121",
+        "airbnb-gray": "#757575",
+        "airbnb-border": "#E0E0E0",
+        "airbnb-surface": "#FAFAFA",
+      },
+      boxShadow: {
+        sm: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+        DEFAULT:
+          "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)",
+        md: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+        lg: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+        xl: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+        "2xl": "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+        "elevation-1": "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)",
+        "elevation-2": "0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)",
+        "elevation-3":
+          "0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23)",
+        "elevation-4":
+          "0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22)",
+        "indian-lg":
+          "0 25px 50px -12px rgba(190, 18, 60, 0.15), 0 12px 24px -8px rgba(249, 115, 22, 0.12)",
+      },
+      fontFamily: {
+        sans: ["var(--font-geist-sans)", "system-ui", "sans-serif"],
+        mono: ["var(--font-geist-mono)", "monospace"],
+        display: ["var(--font-display)", "Georgia", "serif"],
+      },
+      animation: {
+        float: "float 6s ease-in-out infinite",
+        shimmer: "shimmer 2.5s linear infinite",
+        "fade-up": "fadeUp 0.6s ease-out forwards",
+      },
+      keyframes: {
+        float: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-10px)" },
+        },
+        shimmer: {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
+        fadeUp: {
+          "0%": { opacity: "0", transform: "translateY(24px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+      },
     },
-    plugins: [],
+  },
+  plugins: [],
 };
 
 export default config;
-
