@@ -119,6 +119,12 @@ npm run seed
 # or: npx convex run adminAuth:ensureDefaultAdmin
 ```
 
+If login fails with the default credentials, reset the admin password:
+
+```bash
+npx convex run adminAuth:resetDefaultAdminPassword '{"repairKey":"spiritual-yatra-seed"}'
+```
+
 ## Admin Dashboard
 
 Protected admin area at `/admin` (linked from the footer).

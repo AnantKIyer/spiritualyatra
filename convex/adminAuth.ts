@@ -77,7 +77,11 @@ export const validateSession = query({
 export const ensureDefaultAdmin = mutation({
   args: {},
   handler: async (ctx) => {
-    const existing = await ctx.db.query("adminUsers").first();
+    const existing = await ctx.db
+      .query("adminUsers")
+      .withIndex("by_username", (q) => q.eq("username", "admin-user"))
+      .unique();
+
     if (existing) {
       return { created: false, username: existing.username };
     }
@@ -91,6 +95,47 @@ export const ensureDefaultAdmin = mutation({
     });
 
     return { created: true, username: "admin-user" };
+  },
+});
+
+export const resetDefaultAdminPassword = mutation({
+  args: { repairKey: v.string() },
+  handler: async (ctx, { repairKey }) => {
+    const expectedKey = process.env.SEED_ADMIN_KEY ?? "spiritual-yatra-seed";
+    if (repairKey !== expectedKey) {
+      throw new Error("Invalid repair key");
+    }
+
+    const user = await ctx.db
+      .query("adminUsers")
+      .withIndex("by_username", (q) => q.eq("username", "admin-user"))
+      .unique();
+
+    if (!user) {
+      await ctx.db.insert("adminUsers", {
+        username: "admin-user",
+        passwordHash: await hashPassword("password"),
+        displayName: "Admin",
+        role: "admin",
+        active: true,
+      });
+      return { reset: true, username: "admin-user", created: true };
+    }
+
+    await ctx.db.patch(user._id, {
+      passwordHash: await hashPassword("password"),
+      active: true,
+    });
+
+    const sessions = await ctx.db
+      .query("adminSessions")
+      .filter((q) => q.eq(q.field("userId"), user._id))
+      .collect();
+    for (const session of sessions) {
+      await ctx.db.delete(session._id);
+    }
+
+    return { reset: true, username: "admin-user", created: false };
   },
 });
 

@@ -64,11 +64,20 @@ export type TestimonialFormData = {
   avatar?: string;
 };
 
-export async function loginAction(formData: FormData): Promise<ActionResult> {
-  const username = formData.get("username")?.toString() ?? "";
+export async function loginAction(
+  _prevState: ActionResult | null,
+  formData: FormData,
+): Promise<ActionResult> {
+  const username = formData.get("username")?.toString().trim() ?? "";
   const password = formData.get("password")?.toString() ?? "";
 
+  if (!username || !password) {
+    return { success: false, error: "Username and password are required" };
+  }
+
   try {
+    await fetchMutation(api.adminAuth.ensureDefaultAdmin, {});
+
     const result = await fetchMutation(api.adminAuth.login, {
       username,
       password,
@@ -82,15 +91,63 @@ export async function loginAction(formData: FormData): Promise<ActionResult> {
       path: "/",
       maxAge: 60 * 60 * 8,
     });
+
+    return { success: true };
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Invalid username or password";
+
+    if (message.includes("NEXT_PUBLIC_CONVEX_URL")) {
+      return {
+        success: false,
+        error:
+          "Could not reach the database. Check NEXT_PUBLIC_CONVEX_URL on this deployment.",
+      };
+    }
+
+    return { success: false, error: message };
+  }
+}
+
+export async function changePasswordAction(
+  _prevState: ActionResult | null,
+  formData: FormData,
+): Promise<ActionResult> {
+  await requireAdminSession();
+
+  const currentPassword = formData.get("currentPassword")?.toString() ?? "";
+  const newPassword = formData.get("newPassword")?.toString() ?? "";
+  const confirmPassword = formData.get("confirmPassword")?.toString() ?? "";
+
+  if (!currentPassword || !newPassword || !confirmPassword) {
+    return { success: false, error: "All password fields are required" };
+  }
+
+  if (newPassword !== confirmPassword) {
+    return { success: false, error: "New passwords do not match" };
+  }
+
+  if (newPassword.length < 8) {
+    return {
+      success: false,
+      error: "New password must be at least 8 characters",
+    };
+  }
+
+  try {
+    await fetchMutation(api.adminAuth.changePassword, {
+      sessionToken: await requireSessionToken(),
+      currentPassword,
+      newPassword,
+    });
+    return { success: true };
   } catch (error) {
     return {
       success: false,
       error:
-        error instanceof Error ? error.message : "Invalid username or password",
+        error instanceof Error ? error.message : "Failed to change password",
     };
   }
-
-  redirect("/admin");
 }
 
 export async function logoutAction(): Promise<void> {

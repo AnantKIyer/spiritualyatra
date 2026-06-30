@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
@@ -8,29 +8,23 @@ import { loginAction } from "@/app/admin/actions";
 
 export default function LoginForm() {
   const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [state, formAction, isPending] = useActionState(loginAction, null);
 
-  async function handleSubmit(formData: FormData) {
-    setIsLoading(true);
-    setError(null);
-    const result = await loginAction(formData);
-    if (result && !result.success) {
-      setError(result.error);
-      setIsLoading(false);
-    } else {
+  useEffect(() => {
+    if (state?.success) {
+      router.push("/admin");
       router.refresh();
     }
-  }
+  }, [state, router]);
 
   return (
-    <form action={handleSubmit} className="space-y-6">
-      {error && (
+    <form action={formAction} className="space-y-6">
+      {state && !state.success && (
         <div
           className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-800 text-sm"
           role="alert"
         >
-          {error}
+          {state.error}
         </div>
       )}
       <Input
@@ -53,9 +47,9 @@ export default function LoginForm() {
         variant="primary"
         size="lg"
         className="w-full"
-        disabled={isLoading}
+        disabled={isPending}
       >
-        {isLoading ? "Signing in…" : "Sign in"}
+        {isPending ? "Signing in…" : "Sign in"}
       </Button>
     </form>
   );

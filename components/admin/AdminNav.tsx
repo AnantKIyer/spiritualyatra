@@ -11,6 +11,7 @@ const tabs = [
   { href: "/admin/packages", label: "Packages" },
   { href: "/admin/testimonials", label: "Testimonials" },
   { href: "/admin/inquiries", label: "Inquiries" },
+  { href: "/admin/settings", label: "Settings" },
 ];
 
 export default function AdminNav() {
