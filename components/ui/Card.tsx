@@ -18,7 +18,7 @@ export default function Card({
         "bg-white rounded-lg border border-primary-200 overflow-hidden transition-all duration-200",
         hover && "hover:material-elevation-3 hover:-translate-y-1",
         !hover && "material-elevation-2",
-        className
+        className,
       )}
     >
       {children}

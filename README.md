@@ -48,23 +48,26 @@ spiritualyatra/
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm, yarn, pnpm, or bun
 
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone <repository-url>
 cd spiritualyatra
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Run the development server:
+
 ```bash
 npm run dev
 ```
@@ -98,14 +101,35 @@ The website references images in the `public/images/` directory. You'll need to 
 
 You can use placeholder images or actual destination photos. Recommended size: 800x600px or similar aspect ratio.
 
-## Future Phases (Backend Integration)
+## Convex Database
 
-This project is structured to easily add backend functionality in future phases:
+Content is stored in [Convex](https://convex.dev) (`destinations`, `packages`, `testimonials`, `contactInquiries`).
 
-1. **Data Layer:** The `lib/data/` directory can be replaced with API calls
-2. **Type Definitions:** Types in `types/index.ts` are designed to match backend models
-3. **Form Handling:** React Hook Form is ready for API submission
-4. **Environment Variables:** Can be added for API endpoints
+```bash
+npm run convex:dev   # sync Convex functions locally
+npm run seed         # import seed data from lib/data/
+```
+
+Set `NEXT_PUBLIC_CONVEX_URL` in `.env.local` (see `.env.local.example`).
+
+Also set `ADMIN_API_SECRET` in Convex to match your local env:
+
+```bash
+npx convex env set ADMIN_API_SECRET spiritual-yatra-admin-api-secret-dev
+```
+
+## Admin Dashboard
+
+Protected admin area at `/admin` (linked from the footer).
+
+Default credentials (change via env vars):
+
+- Username: `admin-user`
+- Password: `password`
+
+Required env vars: `ADMIN_USERNAME`, `ADMIN_PASSWORD`, `ADMIN_SESSION_SECRET`, `ADMIN_API_SECRET`.
+
+Features: manage destinations, packages, testimonials, and contact inquiries; upload images via Convex File Storage.
 
 ## Development
 
@@ -115,14 +139,11 @@ This project is structured to easily add backend functionality in future phases:
 
 ## Deployment
 
-This static site can be deployed to:
+This app uses Next.js with Convex. Deploy to **Vercel** (recommended) with:
 
-- **Vercel** (recommended for Next.js)
-- **Netlify**
-- **GitHub Pages**
-- **Any static hosting service**
-
-Simply run `npm run build` and deploy the `out` directory.
+- `NEXT_PUBLIC_CONVEX_URL`
+- `ADMIN_*` environment variables
+- Run `npm run convex:deploy` for production Convex functions
 
 ## License
 

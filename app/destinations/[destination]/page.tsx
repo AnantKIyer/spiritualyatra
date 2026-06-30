@@ -1,7 +1,8 @@
-import { use } from "react";
 import { notFound } from "next/navigation";
-import { destinations, getDestinationById } from "@/lib/data/destinations";
+import { fetchQuery } from "convex/nextjs";
+import { api } from "@/convex/_generated/api";
 import DestinationDetails from "@/components/sections/DestinationDetails";
+import { toDestination } from "@/lib/convex/map";
 
 interface PageProps {
   params: Promise<{
@@ -9,19 +10,20 @@ interface PageProps {
   }>;
 }
 
-export function generateStaticParams() {
-  return destinations.map((destination) => ({
-    destination: destination.id,
-  }));
+export async function generateStaticParams() {
+  const slugs = await fetchQuery(api.destinations.listSlugs);
+  return slugs.map((destination) => ({ destination }));
 }
 
-export default function DestinationPage({ params }: PageProps) {
-  const { destination: destinationId } = use(params);
-  const destination = getDestinationById(destinationId);
+export default async function DestinationPage({ params }: PageProps) {
+  const { destination: destinationId } = await params;
+  const doc = await fetchQuery(api.destinations.getBySlug, {
+    slug: destinationId,
+  });
 
-  if (!destination) {
+  if (!doc) {
     notFound();
   }
 
-  return <DestinationDetails destination={destination} />;
+  return <DestinationDetails destination={toDestination(doc)} />;
 }

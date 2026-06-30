@@ -1,27 +1,45 @@
 "use client";
 
+import { useState, useId } from "react";
 import { useForm } from "react-hook-form";
+import { useMutation, useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import { ContactFormData } from "@/types";
 import Input from "@/components/ui/Input";
 import Textarea from "@/components/ui/Textarea";
 import Button from "@/components/ui/Button";
-import { packages } from "@/lib/data/packages";
+import { toPackages } from "@/lib/convex/map";
 
 export default function ContactPage() {
+  const packageSelectId = useId();
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const packageDocs = useQuery(api.packages.list);
+  const submitInquiry = useMutation(api.contactInquiries.submit);
+  const packages = packageDocs ? toPackages(packageDocs) : [];
+
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     reset,
   } = useForm<ContactFormData>();
 
-  const onSubmit = (data: ContactFormData) => {
-    // In Phase 2, this will submit to a backend API
-    console.log("Form data:", data);
-    alert(
-      "Thank you for your message! We will get back to you soon. (Note: This is a demo - form submission will be enabled in Phase 2)"
-    );
-    reset();
+  const onSubmit = async (data: ContactFormData) => {
+    setSubmitError(null);
+    try {
+      await submitInquiry({
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        message: data.message,
+        packageSlug: data.package || undefined,
+      });
+      setIsSubmitted(true);
+      reset();
+    } catch {
+      setSubmitError("Something went wrong. Please try again.");
+    }
   };
 
   return (
@@ -33,10 +51,28 @@ export default function ContactPage() {
               Contact us
             </h1>
             <p className="text-lg text-airbnb-gray">
-              Have questions or ready to plan your spiritual journey? We're here
-              to help.
+              Have questions or ready to plan your spiritual journey? We&apos;re
+              here to help.
             </p>
           </div>
+
+          {isSubmitted && (
+            <div
+              className="mb-6 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-green-800"
+              role="status"
+            >
+              Thank you for your message! We will get back to you soon.
+            </div>
+          )}
+
+          {submitError && (
+            <div
+              className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-800"
+              role="alert"
+            >
+              {submitError}
+            </div>
+          )}
 
           <div className="bg-white border border-orange-100 rounded-xl p-8 md:p-10 mb-12">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -73,12 +109,17 @@ export default function ContactPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-airbnb-black mb-2">
+                <label
+                  htmlFor={packageSelectId}
+                  className="block text-sm font-medium text-airbnb-black mb-2"
+                >
                   Interested package (optional)
                 </label>
                 <select
+                  id={packageSelectId}
                   {...register("package")}
-                  className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 bg-white transition-all duration-200 border-orange-100"
+                  disabled={packageDocs === undefined}
+                  className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 bg-white transition-all duration-200 border-orange-100 disabled:opacity-50"
                 >
                   <option value="">Select a package (optional)</option>
                   {packages.map((pkg) => (
@@ -106,8 +147,9 @@ export default function ContactPage() {
                   variant="primary"
                   size="lg"
                   className="w-full md:w-auto"
+                  disabled={isSubmitting}
                 >
-                  Send message
+                  {isSubmitting ? "Sending…" : "Send message"}
                 </Button>
               </div>
             </form>
