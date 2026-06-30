@@ -9,6 +9,8 @@ import Reveal from "@/components/ui/motion/Reveal";
 import { toPackages } from "@/lib/convex/map";
 import { sortPackagesBoostedFirst } from "@/lib/packages/sort";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Travel Packages - Spiritual Yatra",
   description:

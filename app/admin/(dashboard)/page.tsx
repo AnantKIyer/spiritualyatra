@@ -8,6 +8,8 @@ import DonutChart from "@/components/admin/DonutChart";
 import InsightsStrip from "@/components/admin/InsightsStrip";
 import PopularPackagesWidget from "@/components/admin/PopularPackagesWidget";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Admin Dashboard - Spiritual Yatra",
 };

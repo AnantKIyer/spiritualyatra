@@ -3,6 +3,8 @@ import { api } from "@/convex/_generated/api";
 import { getAdminSecret } from "@/lib/admin/auth";
 import InquiriesTable from "@/components/admin/InquiriesTable";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Admin - Inquiries",
 };

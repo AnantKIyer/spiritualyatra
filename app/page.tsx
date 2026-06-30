@@ -19,6 +19,8 @@ import {
   MapIcon,
 } from "@/components/ui/Icons";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Spiritual Yatra - Your Journey to Divine Destinations",
   description:

@@ -5,15 +5,12 @@ import PackageDetails from "@/components/sections/PackageDetails";
 import TrackView from "@/components/analytics/TrackView";
 import { toPackage } from "@/lib/convex/map";
 
+export const dynamic = "force-dynamic";
+
 interface PageProps {
   params: Promise<{
     package: string;
   }>;
-}
-
-export async function generateStaticParams() {
-  const slugs = await fetchQuery(api.packages.listSlugs);
-  return slugs.map((pkg) => ({ package: pkg }));
 }
 
 export default async function PackagePage({ params }: PageProps) {

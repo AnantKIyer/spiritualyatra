@@ -4,15 +4,12 @@ import { api } from "@/convex/_generated/api";
 import DestinationDetails from "@/components/sections/DestinationDetails";
 import { toDestination } from "@/lib/convex/map";
 
+export const dynamic = "force-dynamic";
+
 interface PageProps {
   params: Promise<{
     destination: string;
   }>;
-}
-
-export async function generateStaticParams() {
-  const slugs = await fetchQuery(api.destinations.listSlugs);
-  return slugs.map((destination) => ({ destination }));
 }
 
 export default async function DestinationPage({ params }: PageProps) {
