@@ -84,6 +84,23 @@ const config: Config = {
           "500": "#C5A028",
           "600": "#A67C00",
         },
+        silk: {
+          "50": "#FCF8F1",
+          "100": "#F7F0E3",
+          "200": "#EFE4CF",
+          "300": "#E4D3B5",
+          "400": "#D7BE94",
+          "500": "#C9A871",
+        },
+        earth: {
+          "100": "#E7D8C2",
+          "200": "#C9B08A",
+          "300": "#A8895E",
+          "400": "#7C5E3B",
+          "500": "#5A4228",
+          "600": "#3E2C18",
+          "700": "#2A1D10",
+        },
         ink: {
           "50": "#F8FAFC",
           "100": "#F1F5F9",
@@ -152,11 +169,24 @@ const config: Config = {
           "0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22)",
         "indian-lg":
           "0 25px 50px -12px rgba(190, 18, 60, 0.15), 0 12px 24px -8px rgba(249, 115, 22, 0.12)",
+        "neu-raised":
+          "9px 9px 20px rgba(123, 94, 58, 0.18), -9px -9px 20px rgba(255, 255, 255, 0.9)",
+        "neu-soft":
+          "6px 6px 14px rgba(123, 94, 58, 0.14), -6px -6px 14px rgba(255, 255, 255, 0.85)",
+        "neu-inset":
+          "inset 6px 6px 12px rgba(123, 94, 58, 0.20), inset -6px -6px 12px rgba(255, 255, 255, 0.9)",
+        "neu-pressed":
+          "inset 4px 4px 9px rgba(123, 94, 58, 0.22), inset -4px -4px 9px rgba(255, 255, 255, 0.85)",
+        "gold-glow": "0 14px 36px -10px rgba(196, 160, 40, 0.5)",
+      },
+      borderRadius: {
+        arch: "48% 48% 14px 14px / 34% 34% 14px 14px",
       },
       fontFamily: {
         sans: ["var(--font-geist-sans)", "system-ui", "sans-serif"],
         mono: ["var(--font-geist-mono)", "monospace"],
         display: ["var(--font-display)", "Georgia", "serif"],
+        devanagari: ["var(--font-devanagari)", "var(--font-display)", "serif"],
       },
       animation: {
         float: "float 6s ease-in-out infinite",

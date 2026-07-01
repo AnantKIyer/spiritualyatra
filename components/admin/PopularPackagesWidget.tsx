@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -21,10 +22,12 @@ export type PopularityItem = {
 
 interface PopularPackagesWidgetProps {
   items: PopularityItem[];
+  showViewAll?: boolean;
 }
 
 export default function PopularPackagesWidget({
   items,
+  showViewAll = true,
 }: PopularPackagesWidgetProps) {
   const router = useRouter();
   const packages = useQuery(api.packages.list);
@@ -42,8 +45,8 @@ export default function PopularPackagesWidget({
   const maxScore = Math.max(...items.map((i) => i.score), 1);
 
   return (
-    <div className="bg-white rounded-2xl border border-ink-100 p-6 shadow-sm">
-      <div className="flex items-center justify-between mb-6">
+    <div className="bg-white rounded-2xl border border-ink-100 p-6 shadow-sm h-full flex flex-col">
+      <div className="flex items-start justify-between mb-6">
         <div>
           <h3 className="font-display text-lg text-ink-900">
             Package Popularity
@@ -52,6 +55,14 @@ export default function PopularPackagesWidget({
             Ranked by views, clicks, and inquiries
           </p>
         </div>
+        {showViewAll && (
+          <Link
+            href="/admin/analytics/packages"
+            className="text-saffron-600 hover:text-saffron-700 text-sm font-medium whitespace-nowrap"
+          >
+            View all →
+          </Link>
+        )}
       </div>
 
       {items.length === 0 ? (
