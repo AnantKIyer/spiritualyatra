@@ -1,16 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Doc, Id } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
 import Button from "@/components/ui/Button";
 import DestinationForm from "./DestinationForm";
+import AdminEntitySplitLayout, {
+  DetailStat,
+  EntityPanelShell,
+  PanelImage,
+  PanelSection,
+} from "./AdminEntitySplitLayout";
 import { deleteDestinationAction } from "@/app/admin/actions";
-
-const SPLIT_HEIGHT = "h-[calc(100dvh-11.5rem)]";
 
 export default function DestinationsAdmin() {
   const destinations = useQuery(api.destinations.list);
@@ -55,255 +58,182 @@ export default function DestinationsAdmin() {
     setSelectedId(null);
   }
 
-  function handleCancelForm() {
+  function cancelForm() {
     setIsCreating(false);
     setIsEditing(false);
-    if (!selectedId && destinations?.[0]) {
-      setSelectedId(destinations[0]._id);
-    }
+    const first = destinations?.[0];
+    if (first) setSelectedId(first._id);
   }
 
   return (
-    <div className={`flex flex-col ${SPLIT_HEIGHT}`}>
-      <div className="mb-4 shrink-0">
-        <h2 className="font-display text-2xl text-ink-900">Destinations</h2>
-        <p className="text-ink-600 text-sm mt-0.5">
-          Browse and manage your destination catalog
-        </p>
-      </div>
-
-      <div className="flex flex-1 min-h-0 flex-col lg:flex-row gap-4">
-        <aside
-          className={cn(
-            "w-full lg:w-[30%] shrink-0 flex flex-col min-h-0",
-            "bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden",
-            "lg:max-h-full",
-          )}
-        >
-          <div className="p-3 border-b border-ink-100 flex items-center justify-between gap-2 shrink-0">
-            <p className="text-sm font-medium text-ink-700">
-              {destinations.length} destinations
-            </p>
-            <Button variant="primary" size="sm" onClick={handleCreate}>
-              Add
-            </Button>
-          </div>
-          <ul className="flex-1 min-h-0 overflow-y-auto divide-y divide-ink-50">
-            {destinations.length === 0 ? (
-              <li className="p-4 text-ink-500 text-sm">No destinations yet.</li>
-            ) : (
-              destinations.map((dest) => (
-                <li key={dest._id}>
-                  <button
-                    type="button"
-                    onClick={() => handleSelect(dest)}
-                    className={cn(
-                      "w-full text-left p-3 transition-colors hover:bg-saffron-50/50",
-                      selectedId === dest._id &&
-                        !isCreating &&
-                        "bg-saffron-50 border-l-4 border-l-saffron-500",
-                    )}
-                  >
-                    <p className="font-medium text-ink-900 truncate text-sm">
-                      {dest.name}
-                    </p>
-                    <p className="text-ink-500 text-xs mt-0.5 truncate">
-                      {dest.location}
-                    </p>
-                    <p className="text-ink-600 text-xs mt-1">
-                      {dest.basePrice
-                        ? `₹${dest.basePrice.toLocaleString()}`
-                        : "No price"}{" "}
-                      · {dest.slug}
-                    </p>
-                  </button>
-                </li>
-              ))
-            )}
-          </ul>
-        </aside>
-
-        <main className="flex-1 min-w-0 min-h-0 h-full bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden flex flex-col">
-          {isCreating ? (
-            <DestinationForm
-              key="create"
-              layout="panel"
-              onSuccess={() => setIsCreating(false)}
-              onCancel={handleCancelForm}
-            />
-          ) : isEditing && selected ? (
-            <DestinationForm
-              key={selected._id}
-              destination={selected}
-              layout="panel"
-              onSuccess={() => setIsEditing(false)}
-              onCancel={() => setIsEditing(false)}
-              onDelete={() => handleDelete(selected._id)}
-              isDeleting={deletingId === selected._id}
-            />
-          ) : selected ? (
-            <DestinationDetailPanel
-              destination={selected}
-              onEdit={() => setIsEditing(true)}
-              onDelete={() => handleDelete(selected._id)}
-              isDeleting={deletingId === selected._id}
-            />
+    <AdminEntitySplitLayout
+      title="Destinations"
+      subtitle="Browse and manage your destination catalog"
+      sidebarCount={<span>{destinations.length} destinations</span>}
+      sidebarAction={
+        <Button variant="primary" size="sm" onClick={handleCreate}>
+          Add
+        </Button>
+      }
+      sidebar={
+        <ul className="divide-y divide-ink-50">
+          {destinations.length === 0 ? (
+            <li className="p-4 text-ink-500 text-sm">No destinations yet.</li>
           ) : (
-            <div className="flex items-center justify-center flex-1 text-ink-500 text-sm">
-              Select a destination or add a new one.
-            </div>
-          )}
-        </main>
-      </div>
-    </div>
-  );
-}
-
-function DestinationDetailPanel({
-  destination,
-  onEdit,
-  onDelete,
-  isDeleting,
-}: {
-  destination: Doc<"destinations">;
-  onEdit: () => void;
-  onDelete: () => void;
-  isDeleting: boolean;
-}) {
-  return (
-    <div className="flex flex-col h-full min-h-0">
-      <div className="flex items-start justify-between gap-4 p-5 border-b border-ink-100 shrink-0">
-        <div className="min-w-0">
-          <h3 className="font-display text-xl text-ink-900 truncate">
-            {destination.name}
-          </h3>
-          <p className="text-ink-500 text-sm mt-0.5">{destination.location}</p>
-        </div>
-        <Button variant="primary" size="sm" onClick={onEdit} className="shrink-0">
-          Edit
-        </Button>
-      </div>
-
-      <div className="p-5 flex-1 min-h-0 overflow-hidden space-y-4">
-        {destination.image ? (
-          <div className="relative w-full h-36 rounded-xl overflow-hidden shrink-0">
-            <Image
-              src={destination.image}
-              alt={destination.name}
-              fill
-              className="object-cover"
-            />
-          </div>
-        ) : (
-          <div className="h-36 rounded-xl bg-ink-50 border border-dashed border-ink-200 flex items-center justify-center text-ink-400 text-sm shrink-0">
-            No image
-          </div>
-        )}
-
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 shrink-0">
-          <DetailStat label="Slug" value={destination.slug} />
-          <DetailStat
-            label="Base price"
-            value={
-              destination.basePrice
-                ? `₹${destination.basePrice.toLocaleString()}`
-                : "—"
-            }
-          />
-          <DetailStat label="Duration" value={destination.duration ?? "—"} />
-          <DetailStat label="Best time" value={destination.bestTime ?? "—"} />
-        </div>
-
-        <div className="min-h-0">
-          <h4 className="text-sm font-semibold text-ink-700 mb-1">
-            Description
-          </h4>
-          <p className="text-ink-600 text-sm leading-relaxed line-clamp-2">
-            {destination.description}
-          </p>
-        </div>
-
-        <div className="min-h-0">
-          <h4 className="text-sm font-semibold text-ink-700 mb-1">
-            Long description
-          </h4>
-          <p className="text-ink-600 text-sm leading-relaxed line-clamp-2">
-            {destination.longDescription}
-          </p>
-        </div>
-
-        {destination.labels && destination.labels.length > 0 && (
-          <div className="shrink-0">
-            <h4 className="text-sm font-semibold text-ink-700 mb-1.5">Labels</h4>
-            <div className="flex flex-wrap gap-1.5">
-              {destination.labels.map((label) => (
-                <span
-                  key={label}
-                  className="px-2 py-0.5 rounded-full bg-ink-100 text-ink-700 text-xs font-medium capitalize"
+            destinations.map((dest) => (
+              <li key={dest._id}>
+                <button
+                  type="button"
+                  onClick={() => handleSelect(dest)}
+                  className={cn(
+                    "w-full text-left p-4 transition-colors hover:bg-saffron-50/50",
+                    selectedId === dest._id &&
+                      !isCreating &&
+                      "bg-saffron-50 border-l-4 border-l-saffron-500",
+                  )}
                 >
-                  {label}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {destination.highlights.length > 0 && (
-          <div className="min-h-0">
-            <h4 className="text-sm font-semibold text-ink-700 mb-1">
-              Highlights ({destination.highlights.length})
-            </h4>
-            <ul className="list-disc list-inside text-sm text-ink-600 space-y-0.5">
-              {destination.highlights.slice(0, 3).map((h) => (
-                <li key={h} className="truncate">
-                  {h}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {destination.tripPlan.length > 0 && (
-          <div className="min-h-0">
-            <h4 className="text-sm font-semibold text-ink-700 mb-1.5">
-              Trip plan ({destination.tripPlan.length} days)
-            </h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {destination.tripPlan.slice(0, 2).map((day) => (
-                <div key={day.day} className="p-2.5 rounded-lg bg-ink-50 text-sm">
-                  <p className="font-medium text-ink-900 truncate">
-                    {day.day}: {day.title}
+                  <p className="font-medium text-ink-900 truncate">{dest.name}</p>
+                  <p className="text-ink-500 text-xs mt-0.5 truncate">
+                    {dest.location}
                   </p>
-                  <p className="text-ink-600 text-xs mt-0.5 line-clamp-1">
-                    {day.description}
+                  <p className="text-ink-600 text-xs mt-1">
+                    {dest.basePrice
+                      ? `₹${dest.basePrice.toLocaleString()}`
+                      : "No price"}{" "}
+                    · {dest.slug}
                   </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-
-      <div className="p-5 border-t border-ink-100 shrink-0">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={onDelete}
-          disabled={isDeleting}
-          className="text-red-600 border-red-200 hover:bg-red-50"
+                </button>
+              </li>
+            ))
+          )}
+        </ul>
+      }
+    >
+      {isCreating ? (
+        <DestinationForm
+          key="create"
+          variant="panel"
+          onSuccess={() => setIsCreating(false)}
+          onCancel={cancelForm}
+        />
+      ) : isEditing && selected ? (
+        <DestinationForm
+          key={selected._id}
+          destination={selected}
+          variant="panel"
+          onSuccess={() => setIsEditing(false)}
+          onCancel={() => setIsEditing(false)}
+          footerExtra={
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => handleDelete(selected._id)}
+              disabled={deletingId === selected._id}
+              className="text-red-600 border-red-200 hover:bg-red-50"
+            >
+              {deletingId === selected._id ? "Deleting…" : "Delete destination"}
+            </Button>
+          }
+        />
+      ) : selected ? (
+        <EntityPanelShell
+          header={
+            <>
+              <h3 className="font-display text-2xl text-ink-900">
+                {selected.name}
+              </h3>
+              <p className="text-ink-500 text-sm mt-1">{selected.location}</p>
+            </>
+          }
+          actions={
+            <Button variant="primary" size="sm" onClick={() => setIsEditing(true)}>
+              Edit
+            </Button>
+          }
+          footer={
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleDelete(selected._id)}
+              disabled={deletingId === selected._id}
+              className="text-red-600 border-red-200 hover:bg-red-50"
+            >
+              {deletingId === selected._id ? "Deleting…" : "Delete destination"}
+            </Button>
+          }
         >
-          {isDeleting ? "Deleting…" : "Delete destination"}
-        </Button>
-      </div>
-    </div>
-  );
-}
+          <PanelImage src={selected.image} alt={selected.name} />
 
-function DetailStat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="p-2.5 rounded-xl bg-ink-50">
-      <p className="text-ink-500 text-xs">{label}</p>
-      <p className="text-ink-900 font-medium text-sm mt-0.5 truncate">{value}</p>
-    </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <DetailStat label="Slug" value={selected.slug} />
+            <DetailStat
+              label="Base price"
+              value={
+                selected.basePrice
+                  ? `₹${selected.basePrice.toLocaleString()}`
+                  : "—"
+              }
+            />
+            <DetailStat label="Duration" value={selected.duration ?? "—"} />
+            <DetailStat label="Best time" value={selected.bestTime ?? "—"} />
+          </div>
+
+          <PanelSection title="Description">
+            <p className="text-ink-600 text-sm leading-relaxed line-clamp-3">
+              {selected.description}
+            </p>
+          </PanelSection>
+
+          {selected.labels && selected.labels.length > 0 && (
+            <PanelSection title="Labels">
+              <div className="flex flex-wrap gap-2">
+                {selected.labels.map((label) => (
+                  <span
+                    key={label}
+                    className="px-2.5 py-1 rounded-full bg-ink-100 text-ink-700 text-xs font-medium capitalize"
+                  >
+                    {label}
+                  </span>
+                ))}
+              </div>
+            </PanelSection>
+          )}
+
+          {selected.highlights.length > 0 && (
+            <PanelSection title={`Highlights (${selected.highlights.length})`}>
+              <ul className="list-disc list-inside text-sm text-ink-600 space-y-0.5">
+                {selected.highlights.slice(0, 3).map((h) => (
+                  <li key={h} className="truncate">
+                    {h}
+                  </li>
+                ))}
+              </ul>
+            </PanelSection>
+          )}
+
+          {selected.tripPlan.length > 0 && (
+            <PanelSection title={`Trip plan (${selected.tripPlan.length} days)`}>
+              <div className="space-y-2">
+                {selected.tripPlan.slice(0, 2).map((day) => (
+                  <div key={day.day} className="p-3 rounded-lg bg-ink-50 text-sm">
+                    <p className="font-medium text-ink-900 truncate">
+                      {day.day}: {day.title}
+                    </p>
+                    <p className="text-ink-600 text-xs mt-1 line-clamp-1">
+                      {day.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </PanelSection>
+          )}
+        </EntityPanelShell>
+      ) : (
+        <div className="flex items-center justify-center h-full text-ink-500">
+          Select a destination or add a new one.
+        </div>
+      )}
+    </AdminEntitySplitLayout>
   );
 }

@@ -1,13 +1,8 @@
 import type { Metadata } from "next";
-import {
-  Geist,
-  Geist_Mono,
-  Fraunces,
-  Noto_Serif_Devanagari,
-} from "next/font/google";
+import { Geist, Geist_Mono, Fraunces } from "next/font/google";
 import "./globals.css";
-import ConvexClientProvider from "@/components/ConvexClientProvider";
-import SiteChrome from "@/components/layout/SiteChrome";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,16 +20,9 @@ const fraunces = Fraunces({
   weight: ["400", "500", "600", "700"],
 });
 
-const notoDevanagari = Noto_Serif_Devanagari({
-  variable: "--font-devanagari",
-  subsets: ["devanagari"],
-  weight: ["400", "600"],
-});
-
 export const metadata: Metadata = {
   title: "Spiritual Yatra - Your Journey to Divine Destinations",
-  description:
-    "Experience spiritual journeys across India. Visit sacred destinations, join yoga retreats, and discover inner peace with our curated travel packages.",
+  description: "Experience spiritual journeys across India. Visit sacred destinations, join yoga retreats, and discover inner peace with our curated travel packages.",
 };
 
 export default function RootLayout({
@@ -45,11 +33,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} ${notoDevanagari.variable} antialiased min-h-screen flex flex-col`}
+        className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} antialiased min-h-screen flex flex-col`}
       >
-        <ConvexClientProvider>
-          <SiteChrome>{children}</SiteChrome>
-        </ConvexClientProvider>
+        <Header />
+        <main className="flex-grow">
+          {children}
+        </main>
+        <Footer />
       </body>
     </html>
   );
