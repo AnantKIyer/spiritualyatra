@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Fraunces } from "next/font/google";
 import "./globals.css";
-import ConvexClientProvider from "@/components/ConvexClientProvider";
-import SiteChrome from "@/components/layout/SiteChrome";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,8 +22,7 @@ const fraunces = Fraunces({
 
 export const metadata: Metadata = {
   title: "Spiritual Yatra - Your Journey to Divine Destinations",
-  description:
-    "Experience spiritual journeys across India. Visit sacred destinations, join yoga retreats, and discover inner peace with our curated travel packages.",
+  description: "Experience spiritual journeys across India. Visit sacred destinations, join yoga retreats, and discover inner peace with our curated travel packages.",
 };
 
 export default function RootLayout({
@@ -36,9 +35,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} antialiased min-h-screen flex flex-col`}
       >
-        <ConvexClientProvider>
-          <SiteChrome>{children}</SiteChrome>
-        </ConvexClientProvider>
+        <Header />
+        <main className="flex-grow">
+          {children}
+        </main>
+        <Footer />
       </body>
     </html>
   );

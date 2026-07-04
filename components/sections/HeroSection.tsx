@@ -11,6 +11,7 @@ import {
 import { useRef } from "react";
 import Button from "@/components/ui/Button";
 import StatCounter from "@/components/ui/motion/StatCounter";
+import Torana from "@/components/ui/ornament/Torana";
 
 interface HeroSectionProps {
   heroImage: string;
@@ -46,6 +47,11 @@ export default function HeroSection({ heroImage }: HeroSectionProps) {
         <div className="absolute inset-0 bg-gradient-to-r from-maroon-900/40 via-transparent to-saffron-900/20" />
       </motion.div>
 
+      {/* Festoon across the top */}
+      <div className="absolute top-20 left-0 right-0 z-20 px-2 opacity-90 drop-shadow-lg">
+        <Torana />
+      </div>
+
       <motion.div
         className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-10 pt-32 pb-20 md:pb-28"
         style={shouldReduceMotion ? {} : { opacity }}
@@ -55,12 +61,17 @@ export default function HeroSection({ heroImage }: HeroSectionProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         >
+          <p className="mb-5">
+            <span className="text-deva font-devanagari text-2xl md:text-3xl text-gold-foil">
+              सत्यं शिवं सुन्दरम्
+            </span>
+          </p>
           <p className="text-saffron-300 font-medium uppercase tracking-[0.3em] text-sm mb-6">
             Discover Sacred India
           </p>
           <h1 className="font-display text-5xl md:text-7xl lg:text-8xl text-white leading-[1.05] mb-6 max-w-4xl">
             Your soul&apos;s journey{" "}
-            <span className="text-gradient-saffron">begins here</span>
+            <span className="text-gold-foil">begins here</span>
           </h1>
           <p className="text-lg md:text-xl text-white/80 max-w-2xl leading-relaxed mb-10">
             From the ghats of Varanasi to the peaks of the Himalayas — curated

@@ -14,7 +14,7 @@
   }
 
   body {
-    @apply bg-ink-50 text-ink-900;
+    @apply bg-silk-100 text-ink-900;
     font-family:
       var(--font-geist-sans),
       system-ui,
@@ -23,6 +23,18 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     @apply leading-relaxed;
+    background-image:
+      radial-gradient(
+        circle at 18% -10%,
+        rgba(249, 115, 22, 0.05),
+        transparent 45%
+      ),
+      radial-gradient(
+        circle at 92% 0%,
+        rgba(190, 18, 60, 0.04),
+        transparent 40%
+      );
+    background-attachment: fixed;
   }
 
   h1,
@@ -51,8 +63,105 @@
     background-image: linear-gradient(135deg, #be123c 0%, #9f1239 100%);
   }
 
+  /* Gold-foil: layered metallic gradient for premium accents */
+  .bg-gold-foil {
+    background-image: linear-gradient(
+      135deg,
+      #a67c00 0%,
+      #d4af37 22%,
+      #fff2c2 48%,
+      #e8c252 64%,
+      #a67c00 100%
+    );
+  }
+
+  .text-gold-foil {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(
+      135deg,
+      #a67c00 0%,
+      #d4af37 24%,
+      #fff2c2 50%,
+      #d4af37 70%,
+      #a67c00 100%
+    );
+  }
+
+  .border-gold-foil {
+    border-image: linear-gradient(135deg, #a67c00, #f4d77a, #a67c00) 1;
+  }
+
   .bg-gradient-sacred {
-    background: linear-gradient(135deg, #fff7ed 0%, #ffffff 40%, #fffbeb 100%);
+    background: linear-gradient(135deg, #fff7ed 0%, #fcf8f1 40%, #fffbeb 100%);
+  }
+
+  /* Silk: warm cream with a soft diagonal sheen */
+  .bg-silk-texture {
+    background-color: #f7f0e3;
+    background-image:
+      linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.55) 0%,
+        rgba(255, 255, 255, 0) 35%,
+        rgba(201, 168, 113, 0.12) 100%
+      ),
+      repeating-linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.04) 0px,
+        rgba(255, 255, 255, 0.04) 1px,
+        transparent 1px,
+        transparent 6px
+      );
+  }
+
+  /* Earth: deep clay surface for rich contrast sections */
+  .bg-earth-texture {
+    background-color: #2a1d10;
+    background-image:
+      radial-gradient(
+        circle at 20% 20%,
+        rgba(196, 160, 40, 0.1),
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 80% 60%,
+        rgba(190, 18, 60, 0.12),
+        transparent 55%
+      ),
+      url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23d4af37' fill-opacity='0.05'%3E%3Cpath d='M0 20h40M20 0v40'/%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  /* Neumorphic surfaces on the silk base */
+  .neu-raised {
+    background: linear-gradient(145deg, #fcf6ec, #efe5d4);
+    box-shadow:
+      9px 9px 20px rgba(123, 94, 58, 0.18),
+      -9px -9px 20px rgba(255, 255, 255, 0.9);
+  }
+
+  .neu-soft {
+    background: linear-gradient(145deg, #faf3e6, #efe5d4);
+    box-shadow:
+      6px 6px 14px rgba(123, 94, 58, 0.14),
+      -6px -6px 14px rgba(255, 255, 255, 0.85);
+  }
+
+  .neu-inset {
+    background: #f3ead9;
+    box-shadow:
+      inset 6px 6px 12px rgba(123, 94, 58, 0.2),
+      inset -6px -6px 12px rgba(255, 255, 255, 0.9);
+  }
+
+  .neu-raised-hover {
+    transition:
+      box-shadow 0.4s ease,
+      transform 0.4s ease;
+  }
+  .neu-raised-hover:hover {
+    box-shadow:
+      12px 12px 28px rgba(123, 94, 58, 0.22),
+      -12px -12px 28px rgba(255, 255, 255, 0.95);
   }
 
   .bg-gradient-hero {
@@ -74,7 +183,28 @@
   }
 
   .pattern-mandala {
-    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f97316' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23b45309' fill-opacity='0.07'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  /* Jaali: temple lattice screen, for ornamental overlays */
+  .pattern-jaali {
+    background-image: url("data:image/svg+xml,%3Csvg width='44' height='44' viewBox='0 0 44 44' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23a67c00' stroke-opacity='0.12' stroke-width='1'%3E%3Cpath d='M22 2l20 20-20 20L2 22z'/%3E%3Ccircle cx='22' cy='22' r='8'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 44px 44px;
+  }
+
+  /* Soft temple-arch top via scalable border-radius */
+  .arch-top {
+    border-radius: 48% 48% 14px 14px / 34% 34% 14px 14px;
+  }
+
+  /* Devanagari needs extra vertical room so matras / shiro-rekha
+     aren't clipped by tight line-heights or background-clip:text. */
+  .text-deva {
+    display: inline-block;
+    line-height: 1.9;
+    padding-top: 0.22em;
+    padding-bottom: 0.1em;
+    overflow: visible;
   }
 
   .material-elevation-1 {

@@ -1,12 +1,10 @@
-import Link from "next/link";
 import { fetchQuery } from "@/lib/convex/server";
 import { api } from "@/convex/_generated/api";
 import { requireSessionToken } from "@/lib/admin/auth";
-import StatCard from "@/components/admin/StatCard";
-import TrendAreaChart from "@/components/admin/TrendAreaChart";
-import DonutChart from "@/components/admin/DonutChart";
+import AnalyticsBento from "@/components/admin/AnalyticsBento";
 import InsightsStrip from "@/components/admin/InsightsStrip";
 import PopularPackagesWidget from "@/components/admin/PopularPackagesWidget";
+import RecentInquiriesWidget from "@/components/admin/RecentInquiriesWidget";
 
 export const dynamic = "force-dynamic";
 
@@ -75,30 +73,60 @@ function buildInsights(popularity: PopularityRow[], stats: StatsRow) {
 export default async function AdminDashboardPage() {
   const sessionToken = await requireSessionToken();
 
-  const [stats, popularity, trend, inquiries] = await Promise.all([
+  const [stats, popularity, inquiries] = await Promise.all([
     fetchQuery(api.analytics.getStats, { sessionToken }),
     fetchQuery(api.analytics.packagePopularity, { sessionToken }),
-    fetchQuery(api.analytics.inquiriesOverTime, { sessionToken }),
     fetchQuery(api.contactInquiries.list, { sessionToken }),
   ]);
 
   const insights = buildInsights(popularity, stats);
 
-  const statusSegments = [
+  const bentoItems = [
     {
-      label: "new",
-      value: stats.inquiriesByStatus.new,
-      color: "#f97316",
+      label: "Package Views",
+      value: stats.totalViews,
+      sublabel: "All-time card impressions",
+      href: "/admin/analytics/traffic",
+      accent: "saffron" as const,
+      colSpan: 2 as const,
+      rowSpan: 2 as const,
     },
     {
-      label: "contacted",
-      value: stats.inquiriesByStatus.contacted,
-      color: "#059669",
+      label: "Card Clicks",
+      value: stats.totalClicks,
+      sublabel: "All-time click events",
+      href: "/admin/analytics/traffic#clicks",
+      accent: "maroon" as const,
     },
     {
-      label: "closed",
-      value: stats.inquiriesByStatus.closed,
-      color: "#6b7280",
+      label: "Inquiries",
+      value: stats.inquiries,
+      sublabel: `${stats.inquiriesByStatus.new} new`,
+      href: "/admin/analytics/inquiries",
+      accent: "royal" as const,
+    },
+    {
+      label: "Featured",
+      value: stats.boostedCount,
+      sublabel: "Boosted packages",
+      href: "/admin/analytics/packages",
+      accent: "emerald" as const,
+    },
+    {
+      label: "Destinations",
+      value: stats.destinations,
+      sublabel: "In catalog",
+      href: "/admin/analytics/destinations",
+      accent: "ink" as const,
+    },
+    {
+      label: "Avg Rating",
+      value: stats.avgRating || "—",
+      sublabel: `${stats.testimonials} reviews`,
+      href: "/admin/analytics/ratings",
+      accent: "gold" as const,
+      colSpan: 2 as const,
+      rowSpan: 1 as const,
     },
   ];
 
@@ -110,105 +138,17 @@ export default async function AdminDashboardPage() {
         </h2>
         <p className="text-ink-600">
           Real-time insights across packages, destinations, and traveler
-          interest.
+          interest. Click any metric for deeper analytics.
         </p>
       </div>
 
       <InsightsStrip insights={insights} />
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-        <StatCard
-          label="Package Views"
-          value={stats.totalViews}
-          accent="saffron"
-          sublabel="Last 30 days (all time)"
-        />
-        <StatCard
-          label="Card Clicks"
-          value={stats.totalClicks}
-          accent="maroon"
-        />
-        <StatCard
-          label="Inquiries"
-          value={stats.inquiries}
-          accent="royal"
-          sublabel={`${stats.inquiriesByStatus.new} new`}
-        />
-        <StatCard
-          label="Featured"
-          value={stats.boostedCount}
-          accent="emerald"
-          sublabel="Boosted packages"
-        />
-        <StatCard
-          label="Destinations"
-          value={stats.destinations}
-          accent="ink"
-        />
-        <StatCard
-          label="Avg Rating"
-          value={stats.avgRating || "—"}
-          accent="saffron"
-          sublabel={`${stats.testimonials} reviews`}
-        />
-      </div>
+      <AnalyticsBento items={bentoItems} />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <TrendAreaChart data={trend} title="Inquiry Trend" />
-        <DonutChart title="Inquiry Status" segments={statusSegments} />
-      </div>
-
-      <PopularPackagesWidget items={popularity} />
-
-      <div className="bg-white rounded-2xl border border-ink-100 p-6 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-display text-lg text-ink-900">
-            Recent Inquiries
-          </h3>
-          <Link
-            href="/admin/inquiries"
-            className="text-saffron-600 hover:text-saffron-700 text-sm font-medium"
-          >
-            View all →
-          </Link>
-        </div>
-        {inquiries.length === 0 ? (
-          <p className="text-ink-500 text-sm">No inquiries yet.</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-ink-100 text-left text-ink-500">
-                  <th className="pb-3 pr-4 font-medium">Name</th>
-                  <th className="pb-3 pr-4 font-medium">Package</th>
-                  <th className="pb-3 pr-4 font-medium">Status</th>
-                  <th className="pb-3 font-medium">Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {inquiries.slice(0, 8).map((inquiry) => (
-                  <tr key={inquiry._id} className="border-b border-ink-50">
-                    <td className="py-3 pr-4">
-                      <p className="text-ink-900 font-medium">{inquiry.name}</p>
-                      <p className="text-ink-500 text-xs">{inquiry.email}</p>
-                    </td>
-                    <td className="py-3 pr-4 text-ink-600">
-                      {inquiry.packageSlug ?? "—"}
-                    </td>
-                    <td className="py-3 pr-4">
-                      <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-saffron-100 text-saffron-800 capitalize">
-                        {inquiry.status}
-                      </span>
-                    </td>
-                    <td className="py-3 text-ink-500 whitespace-nowrap">
-                      {new Date(inquiry._creationTime).toLocaleDateString()}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <PopularPackagesWidget items={popularity} />
+        <RecentInquiriesWidget inquiries={inquiries} />
       </div>
     </div>
   );

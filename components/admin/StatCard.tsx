@@ -2,7 +2,7 @@ interface StatCardProps {
   label: string;
   value: string | number;
   sublabel?: string;
-  accent?: "saffron" | "maroon" | "emerald" | "royal" | "ink";
+  accent?: "saffron" | "maroon" | "emerald" | "royal" | "ink" | "gold";
   trend?: string;
 }
 
@@ -12,6 +12,7 @@ const accents = {
   emerald: "from-emerald-500 to-emerald-700",
   royal: "from-royal-blue-500 to-royal-blue-700",
   ink: "from-ink-700 to-ink-900",
+  gold: "from-marigold-500 to-gold-500",
 };
 
 export default function StatCard({

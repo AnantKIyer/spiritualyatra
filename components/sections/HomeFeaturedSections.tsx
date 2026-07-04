@@ -77,6 +77,7 @@ export default function HomeFeaturedSections() {
         <div className="max-w-7xl mx-auto px-6 lg:px-10">
           <SectionHeading
             eyebrow="Sacred Places"
+            accent="पवित्र स्थान"
             title="Destinations that transform"
             subtitle="From ancient ghats to Himalayan peaks — each destination tells a story of devotion, history, and wonder."
           />
@@ -99,10 +100,11 @@ export default function HomeFeaturedSections() {
         </div>
       </section>
 
-      <section className="py-20 md:py-28 bg-white">
+      <section className="py-20 md:py-28 bg-silk-texture">
         <div className="max-w-7xl mx-auto px-6 lg:px-10">
           <SectionHeading
             eyebrow="Curated Journeys"
+            accent="यात्रा पैकेज"
             title="Packages crafted for your soul"
             subtitle="Every package includes accommodation, meals, expert guidance, and a day-by-day itinerary designed for transformation."
           />

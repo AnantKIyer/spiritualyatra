@@ -9,6 +9,10 @@ import ImageManager from "./ImageManager";
 import StringListEditor from "./StringListEditor";
 import LabelMultiSelect from "./LabelMultiSelect";
 import TripPlanEditor from "./TripPlanEditor";
+import {
+  EntityPanelShell,
+  PanelSection,
+} from "./AdminEntitySplitLayout";
 import { slugify } from "@/lib/admin/slugify";
 import {
   createDestinationAction,
@@ -21,6 +25,8 @@ interface DestinationFormProps {
   destination?: Doc<"destinations">;
   onSuccess: () => void;
   onCancel: () => void;
+  variant?: "standalone" | "panel";
+  footerExtra?: React.ReactNode;
 }
 
 const emptyForm: DestinationFormData = {
@@ -63,6 +69,8 @@ export default function DestinationForm({
   destination,
   onSuccess,
   onCancel,
+  variant = "standalone",
+  footerExtra,
 }: DestinationFormProps) {
   const [form, setForm] = useState<DestinationFormData>(() =>
     destination ? toFormData(destination) : emptyForm,
@@ -70,6 +78,7 @@ export default function DestinationForm({
   const [slugTouched, setSlugTouched] = useState(!!destination);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   function updateField<K extends keyof DestinationFormData>(
     key: K,
@@ -105,77 +114,125 @@ export default function DestinationForm({
     onSuccess();
   }
 
-  return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+  const fields = (
+    <>
       {error && (
         <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-800 text-sm">
           {error}
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Input
-          label="Name"
-          value={form.name}
-          onChange={(e) => {
-            const name = e.target.value;
-            updateField("name", name);
-            if (!slugTouched) updateField("slug", slugify(name));
-          }}
-          required
-        />
-        <Input
-          label="Slug"
-          value={form.slug}
-          onChange={(e) => {
-            setSlugTouched(true);
-            updateField("slug", slugify(e.target.value));
-          }}
-          required
-        />
-        <Input
-          label="Location"
-          value={form.location}
-          onChange={(e) => updateField("location", e.target.value)}
-          required
-        />
-        <Input
-          label="Base price (INR)"
-          type="number"
-          value={form.basePrice ?? ""}
-          onChange={(e) =>
-            updateField(
-              "basePrice",
-              e.target.value ? Number(e.target.value) : undefined,
-            )
-          }
-        />
-        <Input
-          label="Duration"
-          value={form.duration ?? ""}
-          onChange={(e) => updateField("duration", e.target.value)}
-        />
-        <Input
-          label="Best time to visit"
-          value={form.bestTime ?? ""}
-          onChange={(e) => updateField("bestTime", e.target.value)}
-        />
-      </div>
+      {variant === "panel" ? (
+        <>
+          <ImageManager
+            mainImage={form.image}
+            gallery={form.gallery}
+            onMainImageChange={(image) => updateField("image", image)}
+            onGalleryChange={(gallery) => updateField("gallery", gallery)}
+          />
 
-      <Textarea
-        label="Short description"
-        value={form.description}
-        onChange={(e) => updateField("description", e.target.value)}
-        required
-        rows={3}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <Input
+            label="Slug"
+            value={form.slug}
+            onChange={(e) => {
+              setSlugTouched(true);
+              updateField("slug", slugify(e.target.value));
+            }}
+            required
+          />
+          <Input
+            label="Base price (INR)"
+            type="number"
+            value={form.basePrice ?? ""}
+            onChange={(e) =>
+              updateField(
+                "basePrice",
+                e.target.value ? Number(e.target.value) : undefined,
+              )
+            }
+          />
+          <Input
+            label="Duration"
+            value={form.duration ?? ""}
+            onChange={(e) => updateField("duration", e.target.value)}
+          />
+          <Input
+            label="Best time"
+            value={form.bestTime ?? ""}
+            onChange={(e) => updateField("bestTime", e.target.value)}
+          />
+        </div>
+        </>
+      ) : (
+        <>
+      <ImageManager
+        mainImage={form.image}
+        gallery={form.gallery}
+        onMainImageChange={(image) => updateField("image", image)}
+        onGalleryChange={(gallery) => updateField("gallery", gallery)}
       />
-      <Textarea
-        label="Long description"
-        value={form.longDescription}
-        onChange={(e) => updateField("longDescription", e.target.value)}
-        required
-        rows={6}
-      />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Input
+            label="Name"
+            value={form.name}
+            onChange={(e) => {
+              const name = e.target.value;
+              updateField("name", name);
+              if (!slugTouched) updateField("slug", slugify(name));
+            }}
+            required
+          />
+          <Input
+            label="Slug"
+            value={form.slug}
+            onChange={(e) => {
+              setSlugTouched(true);
+              updateField("slug", slugify(e.target.value));
+            }}
+            required
+          />
+          <Input
+            label="Location"
+            value={form.location}
+            onChange={(e) => updateField("location", e.target.value)}
+            required
+          />
+          <Input
+            label="Base price (INR)"
+            type="number"
+            value={form.basePrice ?? ""}
+            onChange={(e) =>
+              updateField(
+                "basePrice",
+                e.target.value ? Number(e.target.value) : undefined,
+              )
+            }
+          />
+          <Input
+            label="Duration"
+            value={form.duration ?? ""}
+            onChange={(e) => updateField("duration", e.target.value)}
+          />
+          <Input
+            label="Best time to visit"
+            value={form.bestTime ?? ""}
+            onChange={(e) => updateField("bestTime", e.target.value)}
+          />
+        </div>
+        </>
+      )}
+
+      <PanelSection title="Description">
+        <Textarea
+          label={variant === "panel" ? undefined : "Short description"}
+          value={form.description}
+          onChange={(e) => updateField("description", e.target.value)}
+          required
+          rows={3}
+        />
+      </PanelSection>
 
       <LabelMultiSelect
         selected={(form.labels ?? []) as LocationLabel[]}
@@ -187,24 +244,105 @@ export default function DestinationForm({
         items={form.highlights}
         onChange={(highlights) => updateField("highlights", highlights)}
       />
-      <StringListEditor
-        label="Experiences"
-        items={form.experiences ?? []}
-        onChange={(experiences) => updateField("experiences", experiences)}
-      />
-
-      <ImageManager
-        mainImage={form.image}
-        gallery={form.gallery}
-        onMainImageChange={(image) => updateField("image", image)}
-        onGalleryChange={(gallery) => updateField("gallery", gallery)}
-      />
 
       <TripPlanEditor
         tripPlan={form.tripPlan}
         onChange={(tripPlan) => updateField("tripPlan", tripPlan)}
       />
 
+      {variant === "panel" ? (
+        <div>
+          <button
+            type="button"
+            onClick={() => setShowAdvanced((v) => !v)}
+            className="text-sm font-medium text-saffron-600 hover:text-saffron-700"
+          >
+            {showAdvanced ? "Hide" : "Show"} additional fields
+          </button>
+          {showAdvanced && (
+            <div className="mt-4 space-y-4">
+              <Textarea
+                label="Long description"
+                value={form.longDescription}
+                onChange={(e) => updateField("longDescription", e.target.value)}
+                required
+                rows={4}
+              />
+              <StringListEditor
+                label="Experiences"
+                items={form.experiences ?? []}
+                onChange={(experiences) => updateField("experiences", experiences)}
+              />
+            </div>
+          )}
+        </div>
+      ) : (
+        <>
+          <Textarea
+            label="Long description"
+            value={form.longDescription}
+            onChange={(e) => updateField("longDescription", e.target.value)}
+            required
+            rows={6}
+          />
+          <StringListEditor
+            label="Experiences"
+            items={form.experiences ?? []}
+            onChange={(experiences) => updateField("experiences", experiences)}
+          />
+        </>
+      )}
+    </>
+  );
+
+  if (variant === "panel") {
+    return (
+      <form onSubmit={handleSubmit} className="flex flex-col h-full min-h-0">
+        <EntityPanelShell
+          scrollBody
+          header={
+            <>
+              <Input
+                label="Name"
+                value={form.name}
+                onChange={(e) => {
+                  const name = e.target.value;
+                  updateField("name", name);
+                  if (!slugTouched) updateField("slug", slugify(name));
+                }}
+                required
+                className="font-display text-lg"
+              />
+              <Input
+                label="Location"
+                value={form.location}
+                onChange={(e) => updateField("location", e.target.value)}
+                required
+                className="mt-2"
+              />
+            </>
+          }
+          actions={
+            <>
+              <Button type="submit" variant="primary" size="sm" disabled={isSubmitting}>
+                {isSubmitting ? "Saving…" : destination ? "Save" : "Create"}
+              </Button>
+              <Button type="button" variant="outline" size="sm" onClick={onCancel}>
+                Cancel
+              </Button>
+            </>
+          }
+          footer={footerExtra}
+        >
+          {fields}
+        </EntityPanelShell>
+      </form>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {fields}
       <div className="flex gap-3 pt-4">
         <Button type="submit" variant="primary" disabled={isSubmitting}>
           {isSubmitting

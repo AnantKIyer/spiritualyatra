@@ -7,6 +7,10 @@ import HomeFeaturedSections from "@/components/sections/HomeFeaturedSections";
 import SectionHeading from "@/components/sections/SectionHeading";
 import Button from "@/components/ui/Button";
 import Reveal from "@/components/ui/motion/Reveal";
+import BentoGrid from "@/components/ui/bento/BentoGrid";
+import BentoTile from "@/components/ui/bento/BentoTile";
+import ArchFrame from "@/components/ui/ornament/ArchFrame";
+import OrnamentalDivider from "@/components/ui/ornament/OrnamentalDivider";
 import {
   CheckIcon,
   UsersIcon,
@@ -52,60 +56,115 @@ export default function HomePage() {
 
       <HomeFeaturedSections />
 
-      <section className="py-20 md:py-28 bg-ink-950 relative overflow-hidden">
-        <div className="absolute inset-0 pattern-dots opacity-30" />
-        <div className="max-w-7xl mx-auto px-6 lg:px-10 relative z-10">
+      <section className="py-20 md:py-28 bg-silk-texture relative overflow-hidden">
+        <div className="absolute inset-0 pattern-jaali opacity-50" />
+        <div className="relative max-w-7xl mx-auto px-6 lg:px-10">
+          <OrnamentalDivider className="mb-10 text-gold-500" />
           <SectionHeading
             eyebrow="Why Spiritual Yatra"
+            accent="यात्रा"
             title="More than a trip — a transformation"
             subtitle="We don't just show you India. We help you feel it."
-            light
           />
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+          <BentoGrid>
+            <BentoTile tone="maroon" colSpan={2} rowSpan={2}>
+              <span
+                aria-hidden
+                className="pointer-events-none absolute right-2 top-2 font-devanagari text-[110px] leading-[1.2] text-white/10 select-none"
+              >
+                ॐ
+              </span>
+              <div className="relative mt-auto">
+                <p className="text-saffron-200 uppercase tracking-[0.2em] text-xs mb-3">
+                  Our Promise
+                </p>
+                <h3 className="font-display text-2xl md:text-3xl text-white mb-3 leading-snug">
+                  Journeys crafted with devotion, detail, and dharma
+                </h3>
+                <p className="text-white/70 text-sm md:text-base leading-relaxed max-w-md">
+                  Every yatra is shaped around your intention — blending sacred
+                  tradition with effortless, modern comfort.
+                </p>
+              </div>
+            </BentoTile>
+
             {benefits.map((benefit) => {
               const Icon = benefit.icon;
               return (
-                <Reveal key={benefit.title}>
-                  <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-colors duration-300">
-                    <div
-                      className={`w-12 h-12 rounded-xl bg-gradient-to-br ${benefit.color} flex items-center justify-center mb-4`}
-                    >
-                      <Icon className="w-6 h-6 text-white" />
-                    </div>
-                    <h3 className="font-display text-lg text-white mb-2">
-                      {benefit.title}
-                    </h3>
-                    <p className="text-white/60 text-sm leading-relaxed">
-                      {benefit.description}
-                    </p>
+                <BentoTile key={benefit.title} tone="silk">
+                  <div
+                    className={`w-11 h-11 rounded-2xl bg-gradient-to-br ${benefit.color} flex items-center justify-center mb-3 shadow-md`}
+                  >
+                    <Icon className="w-5 h-5 text-white" />
                   </div>
-                </Reveal>
+                  <h3 className="font-display text-base md:text-lg text-ink-900 mb-1.5 leading-snug">
+                    {benefit.title}
+                  </h3>
+                  <p className="text-ink-600 text-xs leading-relaxed line-clamp-3">
+                    {benefit.description}
+                  </p>
+                </BentoTile>
               );
             })}
-          </div>
+
+            <BentoTile tone="gold" colSpan={2}>
+              <div className="flex items-center justify-between h-full gap-4">
+                <div>
+                  <p className="font-display text-3xl md:text-4xl text-earth-700 leading-none">
+                    10,000+
+                  </p>
+                  <p className="text-earth-600 text-sm mt-2">
+                    travelers guided across sacred India
+                  </p>
+                </div>
+                <span className="font-devanagari text-5xl text-earth-700/30 select-none">
+                  ✦
+                </span>
+              </div>
+            </BentoTile>
+
+            <BentoTile tone="earth" colSpan={2}>
+              <div className="flex flex-col h-full justify-center">
+                <span className="text-deva font-devanagari text-2xl md:text-3xl text-gold-foil mb-1">
+                  अतिथि देवो भव
+                </span>
+                <p className="text-silk-200/80 text-sm">
+                  “The guest is divine” — the spirit behind every journey we
+                  design.
+                </p>
+              </div>
+            </BentoTile>
+          </BentoGrid>
         </div>
       </section>
 
-      <section className="py-20 md:py-28 bg-white">
-        <div className="max-w-7xl mx-auto px-6 lg:px-10">
+      <section className="py-20 md:py-28 bg-silk-texture relative overflow-hidden">
+        <div className="absolute inset-0 pattern-mandala opacity-60" />
+        <div className="relative max-w-7xl mx-auto px-6 lg:px-10">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <Reveal>
-              <div className="relative h-80 md:h-[500px] rounded-2xl overflow-hidden shadow-indian-lg">
-                <Image
-                  src="/images/rishikesh_dest.jpeg"
-                  alt="Discover India"
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-ink-950/60 to-transparent" />
-                <div className="absolute bottom-6 left-6">
-                  <p className="text-saffron-300 text-sm uppercase tracking-widest mb-1">
-                    Timeless History
-                  </p>
-                  <p className="font-display text-2xl text-white">
-                    5,000 years of wisdom
-                  </p>
-                </div>
+              <div className="relative neu-raised rounded-[32px] p-3">
+                <ArchFrame
+                  shape="pointed"
+                  className="relative h-80 md:h-[500px]"
+                >
+                  <Image
+                    src="/images/rishikesh_dest.jpeg"
+                    alt="Discover India"
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-ink-950/65 to-transparent" />
+                  <div className="absolute bottom-6 left-6">
+                    <p className="text-saffron-300 text-sm uppercase tracking-widest mb-1">
+                      Timeless History
+                    </p>
+                    <p className="font-display text-2xl text-white">
+                      5,000 years of wisdom
+                    </p>
+                  </div>
+                </ArchFrame>
               </div>
             </Reveal>
             <Reveal direction="right">
@@ -135,6 +194,10 @@ export default function HomePage() {
         <div className="absolute inset-0 pattern-mandala opacity-20" />
         <div className="max-w-4xl mx-auto px-6 lg:px-10 text-center relative z-10">
           <Reveal>
+            <OrnamentalDivider className="mb-8" tone="light" />
+            <span className="text-deva font-devanagari text-xl text-gold-foil mb-2">
+              शुभ यात्रा
+            </span>
             <h2 className="font-display text-3xl md:text-5xl text-white mb-6">
               Your spiritual journey awaits
             </h2>
